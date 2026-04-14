@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — FlipWAV</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#080808;color:#e8e8e8;font-family:'DM Sans',sans-serif;min-height:100vh}
+nav{background:#111;border-bottom:1px solid #272727;height:50px;display:flex;align-items:center;justify-content:center;position:sticky;top:0;z-index:100}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:860px;padding:0 24px}
+.nlogo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;color:#f5c842;text-decoration:none}
+.nlogo em{color:#444;font-style:normal}
+.back{font-size:13px;color:#666;text-decoration:none;transition:color .15s}
+.back:hover{color:#f5c842}
+.wrap{max-width:860px;margin:0 auto;padding:48px 24px 80px}
+h1{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:4px;color:#f5c842;margin-bottom:8px}
+.tagline{font-size:14px;color:#555;margin-bottom:40px;letter-spacing:2px;text-transform:uppercase}
+h2{font-size:16px;font-weight:500;color:#f5c842;margin:32px 0 10px;letter-spacing:1px}
+p{font-size:14px;color:#aaa;line-height:1.8;margin-bottom:12px}
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin:20px 0 32px}
+.feature{background:#161616;border:1px solid #272727;border-radius:4px;padding:16px 18px}
+.feature-title{font-size:13px;font-weight:500;color:#e8e8e8;margin-bottom:6px}
+.feature-desc{font-size:12px;color:#666;line-height:1.6}
+.formats{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 24px}
+.fmt{background:#161616;border:1px solid #272727;border-radius:3px;padding:4px 10px;font-size:11px;color:#f5c842;letter-spacing:1px}
+.contact-box{background:#161616;border:1px solid #272727;border-radius:4px;padding:20px 24px;margin-top:16px}
+.contact-box a{color:#f5c842;text-decoration:none}
+.contact-box a:hover{text-decoration:underline}
+footer{border-top:1px solid #272727;padding:20px 24px;text-align:center;font-size:12px;color:#444;letter-spacing:1px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="nlogo">FLIP<em>///</em>WAV</a>
+    <a href="/" class="back">← Back to Converter</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <h1>About FlipWAV</h1>
+  <div class="tagline">Free · Private · Browser-Based Audio Converter</div>
+
+  <p>FlipWAV is a free, browser-based audio converter that lets you convert audio files between multiple formats instantly — with no uploads, no sign-ups, and no waiting. Everything runs locally on your device.</p>
+
+  <p>Whether you're a musician, game developer, podcaster, or just need to convert a quick audio file, FlipWAV makes it fast and easy.</p>
+
+  <h2>Supported Formats</h2>
+  <div class="formats">
+    <span class="fmt">MP3</span>
+    <span class="fmt">WAV</span>
+    <span class="fmt">OGG</span>
+    <span class="fmt">FLAC</span>
+    <span class="fmt">M4A</span>
+    <span class="fmt">AAC</span>
+    <span class="fmt">WEBM</span>
+    <span class="fmt">AIFF</span>
+  </div>
+
+  <h2>Features</h2>
+  <div class="feature-grid">
+    <div class="feature">
+      <div class="feature-title">100% Private</div>
+      <div class="feature-desc">Your files never leave your device. All conversion happens locally in your browser.</div>
+    </div>
+    <div class="feature">
+      <div class="feature-title">Batch Convert</div>
+      <div class="feature-desc">Upload and convert up to 50 files at once. Download all as a single ZIP file.</div>
+    </div>
+    <div class="feature">
+      <div class="feature-title">No Signup</div>
+      <div class="feature-desc">No account, no email, no registration required. Just open and convert.</div>
+    </div>
+    <div class="feature">
+      <div class="feature-title">Per-File Bitrate</div>
+      <div class="feature-desc">Set individual bitrate for each file. Full control over output quality.</div>
+    </div>
+    <div class="feature">
+      <div class="feature-title">Audio Preview</div>
+      <div class="feature-desc">Play and preview any audio file directly in the browser before converting.</div>
+    </div>
+    <div class="feature">
+      <div class="feature-title">Dark & Light Mode</div>
+      <div class="feature-desc">Switch between dark and light themes. Preference is saved automatically.</div>
+    </div>
+  </div>
+
+  <h2>How It Works</h2>
+  <p>FlipWAV uses Web Audio API and open-source libraries (lamejs, ffmpeg.wasm) to encode and decode audio entirely within your browser. No server processing. No file uploads. Your audio stays on your device at all times.</p>
+
+  <h2>Contact</h2>
+  <div class="contact-box">
+    <p>Have a question, suggestion, or found a bug? We'd love to hear from you.</p>
+    <p>Email: <a href="mailto:hello@flipwav.com">hello@flipwav.com</a></p>
+    <p style="margin-top:8px"><a href="/privacy.html">Privacy Policy</a> · <a href="/">Back to Converter</a></p>
+  </div>
+</div>
+
+<footer>© 2026 FlipWAV · flipwav.com · Free audio conversion for everyone.</footer>
+
+</body>
+</html>
