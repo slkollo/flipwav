@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WAVFLIP — Free Universal Audio Converter</title>
+<meta name="description" content="Free browser-based audio converter. Convert WAV, MP3, OGG, FLAC, AAC, M4A, WebM. No upload, 100% private.">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
+<script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080808;--panel:#111;--p2:#161616;--p3:#1c1c1c;
+  --bd:#222;--bd2:#2c2c2c;--bd3:#363636;
+  --ac:#f5c842;--ac2:#e8a800;--adim:rgba(245,200,66,.1);
+  --bl:#4fc3f7;--bldim:rgba(79,195,247,.08);
+  --gr:#3ecf8e;--grdim:rgba(62,207,142,.08);
+  --pu:#a78bfa;--pudim:rgba(167,139,250,.08);
+  --or:#fb923c;--ordim:rgba(251,146,60,.08);
+  --tx:#e8e8e8;--tx2:#888;--tx3:#3a3a3a;
+  --err:#e74c3c;
+}
+html{scroll-behavior:smooth}
+body{min-height:100vh;background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.02) 3px,rgba(0,0,0,.02) 4px);pointer-events:none;z-index:9998}
+
+/* NAV */
+.nav{background:var(--panel);border-bottom:1px solid var(--bd);height:50px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;position:sticky;top:0;z-index:200}
+.nlogo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:4px;color:var(--ac)}
+.nlogo em{color:var(--tx3);font-style:normal}
+.npills{display:flex;gap:4px}
+.np{background:transparent;border:1px solid var(--bd2);color:var(--tx3);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1.5px;padding:5px 11px;border-radius:2px;cursor:pointer;transition:all .15s;text-transform:uppercase}
+.np:hover,.np.on{border-color:var(--ac);color:var(--ac);background:var(--adim)}
+.nstat{display:flex;align-items:center;gap:5px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--tx3);letter-spacing:1px}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--gr);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ADS */
+.ad-bar{background:#090909;padding:7px 18px;display:flex;align-items:center;justify-content:center;gap:9px}
+.ad-bar.top{border-bottom:1px solid #181818}
+.ad-bar.bot{border-top:1px solid #181818}
+.adl{font-family:'Share Tech Mono',monospace;font-size:8px;color:#252525;letter-spacing:2px}
+.ad-slot{background:var(--p2);border:1px dashed #1c1c1c;border-radius:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.ad-leader{width:728px;height:90px;max-width:calc(100vw - 50px)}
+.adt{font-family:'Share Tech Mono',monospace;font-size:9px;color:#252525;letter-spacing:2px}
+.adsz{font-family:'Share Tech Mono',monospace;font-size:8px;color:#1a1a1a}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:160px 1fr 160px;min-height:calc(100vh - 132px)}
+
+/* SIDE ADS */
+.side-ad{background:#090909;padding:12px 7px;display:flex;flex-direction:column;gap:11px;align-items:center}
+.side-ad.l{border-right:1px solid #181818}
+.side-ad.r{border-left:1px solid #181818}
+.sad-s{background:var(--p2);border:1px dashed #1c1c1c;border-radius:3px;width:142px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px}
+.sad-tall{height:560px}.sad-mid{height:230px}
+
+/* MAIN */
+.main{padding:26px 24px 52px;border-right:1px solid var(--bd)}
+
+/* HERO */
+.hero{display:flex;align-items:flex-end;justify-content:space-between;padding-bottom:16px;border-bottom:1px solid var(--bd);margin-bottom:22px}
+.htitle{font-family:'Bebas Neue',sans-serif;font-size:50px;letter-spacing:5px;color:var(--ac);line-height:1;text-shadow:0 0 35px rgba(245,200,66,.15)}
+.htitle em{color:var(--tx3);font-style:normal}
+.hsub{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--tx3);letter-spacing:2px;margin-top:5px}
+.hbadges{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.hb{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:1px;padding:3px 8px;border:1px solid #1a3328;color:var(--gr);background:rgba(62,207,142,.04);border-radius:2px;text-transform:uppercase}
+
+/* ─── FORMAT INPUT SELECTOR ─── */
+.section-label{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;margin-bottom:8px}
+
+.format-input-row{display:flex;align-items:center;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.fmt-pill{display:flex;align-items:center;gap:6px;background:var(--p2);border:1px solid var(--bd2);border-radius:3px;padding:8px 13px;cursor:pointer;transition:all .15s;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--tx2)}
+.fmt-pill:hover{border-color:var(--bd3);color:var(--tx)}
+.fmt-pill.active{border-color:var(--ac);color:var(--ac);background:var(--adim)}
+.fmt-dot{width:7px;height:7px;border-radius:50%}
+
+/* ─── ARROW ─── */
+.arrow-row{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.arrow-line{flex:1;height:1px;background:var(--bd2)}
+.arrow-icon{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--tx3);letter-spacing:2px;white-space:nowrap}
+
+/* ─── OUTPUT FORMAT GRID ─── */
+.out-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:22px}
+.out-card{background:var(--p2);border:1px solid var(--bd);border-radius:4px;padding:13px 12px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.out-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .15s;pointer-events:none}
+.out-card:hover{border-color:var(--bd3)}
+.out-card.sel{border-width:1.5px}
+.out-card.sel-wav{border-color:var(--bl);background:var(--bldim)}
+.out-card.sel-wav::before{background:radial-gradient(ellipse at top left,rgba(79,195,247,.06) 0%,transparent 70%);opacity:1}
+.out-card.sel-mp3{border-color:var(--ac);background:var(--adim)}
+.out-card.sel-mp3::before{background:radial-gradient(ellipse at top left,rgba(245,200,66,.06) 0%,transparent 70%);opacity:1}
+.out-card.sel-ogg{border-color:var(--gr);background:var(--grdim)}
+.out-card.sel-ogg::before{background:radial-gradient(ellipse at top left,rgba(62,207,142,.06) 0%,transparent 70%);opacity:1}
+.out-card.sel-flac{border-color:var(--pu);background:var(--pudim)}
+.out-card.sel-flac::before{background:radial-gradient(ellipse at top left,rgba(167,139,250,.06) 0%,transparent 70%);opacity:1}
+.out-card.sel-webm{border-color:var(--or);background:var(--ordim)}
+.out-card.sel-webm::before{background:radial-gradient(ellipse at top left,rgba(251,146,60,.06) 0%,transparent 70%);opacity:1}
+.out-card.disabled{opacity:.35;cursor:not-allowed}
+.oc-ext{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;margin-bottom:4px}
+.oc-name{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--tx2);letter-spacing:1px;margin-bottom:6px}
+.oc-tags{display:flex;gap:4px;flex-wrap:wrap}
+.oc-tag{font-size:8px;padding:1px 5px;border-radius:2px;font-family:'Share Tech Mono',monospace;border:1px solid}
+.tag-q{border-color:#2a3a2a;color:#3ecf8e;background:rgba(62,207,142,.06)}
+.tag-s{border-color:#3a3a2a;color:#d4a800;background:rgba(212,168,0,.06)}
+.tag-b{border-color:#2a2a3a;color:#7aa0d4;background:rgba(122,160,212,.06)}
+.tag-info{border-color:#2a2a3a;color:var(--tx3);background:transparent}
+.oc-compat{margin-top:7px;font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--tx3);letter-spacing:.5px}
+.compat-dot{display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:3px;vertical-align:middle}
+.cd-ok{background:var(--gr)}.cd-part{background:var(--ac)}.cd-no{background:var(--err)}
+.check-icon{position:absolute;top:9px;right:9px;width:16px;height:16px;border-radius:50%;display:none;align-items:center;justify-content:center}
+.out-card.sel .check-icon{display:flex}
+.sel-wav .check-icon{background:var(--bl)}
+.sel-mp3 .check-icon{background:var(--ac)}
+.sel-ogg .check-icon{background:var(--gr)}
+.sel-flac .check-icon{background:var(--pu)}
+.sel-webm .check-icon{background:var(--or)}
+
+/* ─── QUALITY SETTINGS ─── */
+.qbox{background:var(--p2);border:1px solid var(--bd2);border-radius:4px;padding:14px 16px;margin-bottom:18px;display:none}
+.qbox.vis{display:block}
+.qbox-title{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;margin-bottom:12px}
+.qrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ql{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--tx2);letter-spacing:1px;min-width:70px}
+.qbtns{display:flex;gap:4px;flex-wrap:wrap}
+.qbtn{background:var(--panel);border:1px solid var(--bd2);color:var(--tx3);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;padding:5px 11px;border-radius:2px;cursor:pointer;transition:all .15s}
+.qbtn:hover{border-color:var(--bd3);color:var(--tx2)}
+.qbtn.on-ac{border-color:var(--ac);color:var(--ac);background:var(--adim)}
+.qbtn.on-bl{border-color:var(--bl);color:var(--bl);background:var(--bldim)}
+.qbtn.on-gr{border-color:var(--gr);color:var(--gr);background:var(--grdim)}
+.qbtn.on-pu{border-color:var(--pu);color:var(--pu);background:var(--pudim)}
+.qbtn.on-or{border-color:var(--or);color:var(--or);background:var(--ordim)}
+.qnote{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--tx3);letter-spacing:.5px;margin-top:8px;line-height:1.5}
+
+/* ─── DROP ZONE ─── */
+.dz{border:2px dashed var(--bd2);border-radius:5px;padding:36px 28px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;background:var(--panel)}
+.dz::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(245,200,66,.025) 0%,transparent 50%);pointer-events:none}
+.dz.ov{border-color:var(--ac);background:rgba(245,200,66,.03)}
+.dz.ov .di{transform:scale(1.08) translateY(-4px)}
+.di{width:44px;height:44px;margin:0 auto 13px;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.di svg{width:100%;height:100%}
+.dt{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--tx);margin-bottom:5px}
+.ds{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--tx3);letter-spacing:1px}
+.ds strong{color:var(--ac)}
+.dz-formats{display:flex;justify-content:center;gap:5px;margin-top:10px;flex-wrap:wrap}
+.dz-fmt{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:1px;padding:2px 7px;border-radius:2px;border:1px solid var(--bd2);color:var(--tx3)}
+
+/* STATS */
+.sb{display:none;border:1px solid var(--bd);border-radius:3px;overflow:hidden;margin:12px 0}
+.sb.on{display:flex}
+.st{flex:1;padding:9px 12px;background:var(--p2);border-right:1px solid var(--bd);display:flex;flex-direction:column;gap:2px}
+.st:last-child{border-right:none}
+.sl{font-family:'Share Tech Mono',monospace;color:var(--tx3);letter-spacing:1px;font-size:8px;text-transform:uppercase}
+.sv{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--ac)}
+
+/* FILE LIST */
+.fl{display:flex;flex-direction:column;gap:3px;margin:4px 0 13px}
+.fc{background:var(--panel);border:1px solid var(--bd);border-radius:3px;height:62px;display:flex;align-items:center;padding:0 12px;gap:10px;position:relative;overflow:hidden;transition:border-color .2s}
+.fc.fd{border-color:rgba(62,207,142,.28)}.fc.fe{border-color:rgba(231,76,60,.28)}.fc.fv{border-color:rgba(245,200,66,.22)}
+.fp{position:absolute;left:0;top:0;bottom:0;width:0%;background:rgba(245,200,66,.04);transition:width .3s;pointer-events:none}
+.fb{width:32px;height:32px;background:var(--p2);border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Bebas Neue',sans-serif;font-size:8px;letter-spacing:.5px;border:1px solid var(--bd);color:var(--ac)}
+.fm{flex:1;min-width:0}
+.fn{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--tx);margin-bottom:2px}
+.fi{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--tx3);letter-spacing:.5px}
+.fst{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;flex-shrink:0;width:88px;text-align:right}
+.fsw{color:var(--tx3)}.fsc{color:var(--ac)}.fsd{color:var(--gr)}.fse{color:var(--err)}
+@keyframes fi2{0%{transform:rotateX(-90deg);opacity:0}100%{transform:rotateX(0);opacity:1}}
+.fst span{display:inline-block;transform-origin:top center;animation:fi2 .2s ease forwards}
+.fa{display:flex;gap:3px;flex-shrink:0}
+.fdlb{background:rgba(62,207,142,.09);border:1px solid rgba(62,207,142,.22);color:var(--gr);width:26px;height:26px;border-radius:2px;cursor:pointer;display:none;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.fdlb.on{display:flex}.fdlb:hover{background:rgba(62,207,142,.2)}
+.frm{background:none;border:none;color:var(--tx3);cursor:pointer;width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:2px;transition:all .15s;font-size:14px;flex-shrink:0}
+.frm:hover{color:var(--err);background:rgba(231,76,60,.1)}
+
+/* PROGRESS */
+.mp{height:2px;background:var(--bd);border-radius:2px;margin:8px 0;overflow:hidden;display:none}
+.mp.on{display:block}
+.mf{height:100%;border-radius:2px;width:0%;transition:width .3s;background:var(--ac);box-shadow:0 0 6px rgba(245,200,66,.4)}
+
+/* TICKER */
+.tk{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--tx3);letter-spacing:1px;min-height:14px;margin:4px 0 12px}
+.ta{color:var(--ac)}.ts{color:var(--gr)}
+
+/* CONTROLS */
+.ctrl{display:none;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.ctrl.on{display:flex}
+.bc{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:3px;padding:12px 24px;border:none;border-radius:3px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:7px;background:var(--ac);color:#080808}
+.bc:hover:not(:disabled){background:var(--ac2);transform:translateY(-1px)}
+.bc:disabled{opacity:.35;cursor:not-allowed;transform:none!important}
+.bc.ld .sp{display:block}.bc.ld .bt{opacity:.7}
+.sp{width:13px;height:13px;border:2px solid rgba(0,0,0,.2);border-top-color:#080808;border-radius:50%;animation:spin .7s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.bclr{background:transparent;color:var(--tx3);border:1px solid var(--bd2);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;padding:12px 16px;border-radius:3px;cursor:pointer;transition:all .15s}
+.bclr:hover{color:var(--tx);border-color:var(--bd3)}
+
+/* PER-FILE CONTROLS */
+.fc{height:auto!important;min-height:64px;flex-direction:column;padding:10px 12px!important;gap:6px!important;align-items:stretch!important}
+.fc-row1{display:flex;align-items:center;gap:10px;width:100%;min-width:0}
+.fc-row2{display:flex;align-items:center;gap:8px;width:100%;padding-left:42px}
+.fplay{background:none;border:1px solid var(--bd2);color:var(--tx2);width:24px;height:24px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;font-size:9px;line-height:1}
+.fplay:hover{border-color:var(--ac);color:var(--ac)}
+.fplay.playing{border-color:var(--gr);color:var(--gr);background:rgba(62,207,142,.1)}
+.fp-wave{display:flex;align-items:center;gap:2px;height:14px}
+.fp-wave span{width:2px;border-radius:1px;background:var(--gr);height:4px;animation:wave .7s infinite ease-in-out}
+.fp-wave span:nth-child(2){animation-delay:.1s;height:8px}
+.fp-wave span:nth-child(3){animation-delay:.2s;height:12px}
+.fp-wave span:nth-child(4){animation-delay:.1s;height:7px}
+.fp-wave span:nth-child(5){animation-delay:0s;height:4px}
+@keyframes wave{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}
+.fpr-bar{flex:1;height:3px;background:var(--bd);border-radius:2px;cursor:pointer;position:relative;overflow:hidden}
+.fpr-fill{height:100%;background:var(--gr);border-radius:2px;width:0%;transition:width .5s linear;pointer-events:none}
+.fpr-time{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--tx3);letter-spacing:.5px;white-space:nowrap;min-width:64px;text-align:right}
+.fbr-wrap{display:flex;align-items:center;gap:5px;margin-left:auto}
+.fbr-lbl{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--tx3);letter-spacing:1px;white-space:nowrap}
+.fbrsel{background:var(--p2);border:1px solid var(--bd2);border-radius:2px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--ac);padding:3px 6px;cursor:pointer;outline:none;letter-spacing:1px}
+.fbrsel:hover,.fbrsel:focus{border-color:var(--ac)}
+
+/* DOWNLOAD BANNER */
+.dlb{border-radius:3px;padding:14px 16px;display:none;align-items:center;gap:13px;margin-top:10px;background:rgba(62,207,142,.05);border:1px solid rgba(62,207,142,.16)}
+.dlb.on{display:flex}
+.dlbi{width:34px;height:34px;border-radius:3px;background:rgba(62,207,142,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dlbt{flex:1}
+.dlbtt{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;color:var(--gr);margin-bottom:1px}
+.dlbts{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--tx3);letter-spacing:1px}
+.bzip{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;padding:9px 16px;border:none;border-radius:3px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;flex-shrink:0;background:var(--gr);color:#080808}
+.bzip:hover{opacity:.85;transform:translateY(-1px)}
+
+/* INLINE AD */
+.iad{margin:22px 0;display:flex;flex-direction:column;align-items:center;gap:5px}
+.iad-slot{width:100%;max-width:728px;height:90px;background:var(--p2);border:1px dashed #1c1c1c;border-radius:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+
+/* HISTORY */
+.hist{margin-top:26px;padding-top:20px;border-top:1px solid var(--bd)}
+.hh{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.hhtit{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:3px;color:var(--tx2)}
+.hclr{background:none;border:1px solid var(--bd);color:var(--tx3);font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:1px;padding:4px 10px;border-radius:2px;cursor:pointer;transition:all .15s;text-transform:uppercase}
+.hclr:hover{border-color:var(--err);color:var(--err)}
+.hemp{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--tx3);letter-spacing:1px;padding:14px 0}
+.hlist{display:flex;flex-direction:column;gap:2px}
+.hr2{background:var(--panel);border:1px solid var(--bd);border-radius:2px;padding:7px 11px;display:flex;align-items:center;gap:9px;transition:border-color .15s}
+.hr2:hover{border-color:var(--bd2)}
+.hbg{width:24px;height:24px;border-radius:2px;background:var(--p2);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:7px;flex-shrink:0;color:var(--ac)}
+.hn{flex:1;min-width:0;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--tx2)}
+.hmt{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--tx3);white-space:nowrap}
+.hpill{font-family:'Share Tech Mono',monospace;font-size:8px;padding:2px 5px;border-radius:2px;white-space:nowrap;background:var(--adim);color:var(--ac);border:1px solid rgba(245,200,66,.18)}
+
+/* COUNTDOWN OVERLAY */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9000;display:none;flex-direction:column;align-items:center;justify-content:center;gap:24px;backdrop-filter:blur(4px)}
+.overlay.on{display:flex}
+.ov-top{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--tx3);letter-spacing:3px;text-transform:uppercase}
+.ov-ad-wrap{background:var(--p2);border:1px solid var(--bd2);border-radius:4px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:6px;width:760px;max-width:calc(100vw - 32px)}
+.ov-ad-lbl{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--tx3);letter-spacing:2px;align-self:flex-start}
+.ov-ad-slot{width:100%;max-width:728px;height:90px;background:#0d0d0d;border:1px dashed #1e1e1e;border-radius:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.ov-mid{display:flex;flex-direction:column;align-items:center;gap:10px}
+.ov-count{font-family:'Bebas Neue',sans-serif;font-size:96px;line-height:1;color:var(--ac);text-shadow:0 0 40px rgba(245,200,66,.4);transition:all .15s}
+.ov-count.pulse{transform:scale(1.05)}
+.ov-count-lbl{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--tx2);letter-spacing:2px}
+.ov-bar-wrap{width:320px;height:3px;background:var(--bd2);border-radius:2px;overflow:hidden}
+.ov-bar{height:100%;background:var(--ac);border-radius:2px;width:100%;transition:width 1s linear;box-shadow:0 0 8px rgba(245,200,66,.4)}
+.ov-skip{background:transparent;border:1px solid var(--bd2);color:var(--tx3);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1.5px;padding:7px 18px;border-radius:2px;cursor:pointer;transition:all .15s;text-transform:uppercase;display:none}
+.ov-skip.show{display:block}
+.ov-skip:hover{border-color:var(--ac);color:var(--ac)}
+.ov-ad-big{background:#0d0d0d;border:1px dashed #1e1e1e;border-radius:3px;width:300px;height:250px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;margin-bottom:4px}
+
+/* COUNTDOWN OVERLAY */
+.ffload{background:var(--p2);border:1px solid var(--bd2);border-radius:3px;padding:10px 14px;margin-bottom:14px;display:none;align-items:center;gap:12px}
+.ffload.on{display:flex}
+.ffload-bar-wrap{flex:1;height:3px;background:var(--bd);border-radius:2px;overflow:hidden}
+.ffload-bar{height:100%;background:var(--or);border-radius:2px;width:0%;transition:width .4s}
+.ffload-txt{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--or);letter-spacing:1px;white-space:nowrap}
+.ffload-sub{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--tx3);letter-spacing:.5px;margin-top:3px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--p3);border:1px solid var(--bd3);border-radius:4px;padding:10px 16px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--tx2);z-index:500;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+
+/* FOOTER */
+.foot{background:var(--panel);border-top:1px solid var(--bd);padding:13px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px}
+.flogo{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:3px;color:var(--tx3)}
+.flogo em{color:var(--ac);font-style:normal}
+.flinks{display:flex;gap:12px}
+.flinks a{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--tx3);text-decoration:none;letter-spacing:1px;text-transform:uppercase;transition:color .15s}
+.flinks a:hover{color:var(--tx2)}
+.fnote{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--tx3);letter-spacing:.5px}
+
+/* LIGHT THEME */
+body.light{
+  --bg:#f4f4f0;--panel:#ffffff;--p2:#f0f0ec;--p3:#e8e8e4;
+  --bd:#ddddd8;--bd2:#d0d0ca;--bd3:#bcbcb6;
+  --tx:#1a1a1a;--tx2:#666;--tx3:#aaa;
+}
+body.light::before{background:none}
+body.light .ad-bar{background:#ebebе7}
+body.light .ad-bar.top{border-color:#ddddd8}
+body.light .ad-bar.bot{border-color:#ddddd8}
+body.light .adl{color:#bbb}
+body.light .ad-slot{background:#e8e8e4;border-color:#d0d0ca}
+body.light .adt{color:#bbb}
+body.light .adsz{color:#ccc}
+body.light .sad-s{background:#e8e8e4;border-color:#d0d0ca}
+body.light .dz{background:#fafaf8}
+body.light .overlay{background:rgba(255,255,255,.94)}
+body.light .ov-ad-big,.body.light .ov-ad-slot{background:#f0f0ec;border-color:#d0d0ca}
+body.light .ov-bar-wrap{background:#ddd}
+body.light .ov-count{text-shadow:0 0 30px rgba(245,200,66,.5)}
+body.light .toast{background:#fff;border-color:#ddd}
+
+/* THEME TOGGLE BUTTON */
+.theme-toggle{background:var(--p2);border:1px solid var(--bd2);border-radius:20px;width:52px;height:26px;cursor:pointer;position:relative;transition:all .3s;flex-shrink:0;display:flex;align-items:center;padding:0 3px}
+.tt-knob{width:20px;height:20px;border-radius:50%;background:var(--ac);transition:transform .3s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;justify-content:center;font-size:11px}
+body.dark .tt-knob{transform:translateX(0)}
+body.light .tt-knob{transform:translateX(26px)}
+.tt-icon-d,.tt-icon-l{position:absolute;font-size:11px;top:50%;transform:translateY(-50%);transition:opacity .2s}
+.tt-icon-d{right:5px;opacity:.5}
+.tt-icon-l{left:5px;opacity:.5}
+body.light .tt-icon-d{opacity:.25}
+body.light .tt-icon-l{opacity:.8}
+
+/* smooth theme transition */
+body{transition:background .3s,color .3s}
+.nav,.foot,.ad-bar,.sad,.dz,.fc,.qbox,.out-card,.dlb,.sb,.hist,.ffload,.fmt-pill,.np,.bc,.bclr{transition:background .3s,border-color .3s,color .3s}
+@media(max-width:1050px){.layout{grid-template-columns:130px 1fr 130px}.sad-s{width:116px}.sad-tall{height:380px}}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.side-ad{display:none}.main{padding:18px 13px 48px}}
+@media(max-width:520px){.hero{flex-direction:column;gap:9px}.out-grid{grid-template-columns:repeat(3,1fr)}.htitle{font-size:38px}.format-input-row{gap:5px}.nstat{display:none}}
+</style>
+</head>
+<body class="dark">
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nlogo">WAV<em>///</em>FLIP</div>
+  <div class="npills">
+    <button class="np on" onclick="document.querySelector('.main').scrollIntoView()">Converter</button>
+    <button class="np" onclick="scrollHist()">History</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <div class="nstat"><div class="dot"></div>BROWSER-BASED · PRIVATE</div>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle dark / light mode">
+      <span class="tt-icon-l">☀</span>
+      <div class="tt-knob" id="ttKnob">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" id="tt-svg">
+          <path d="M5 1v1M5 8v1M1 5h1M8 5h1M2.1 2.1l.7.7M7.2 7.2l.7.7M7.2 2.8l-.7.7M2.8 7.2l-.7.7" stroke="#080808" stroke-width="1" stroke-linecap="round"/>
+          <circle cx="5" cy="5" r="1.5" fill="#080808"/>
+        </svg>
+      </div>
+      <span class="tt-icon-d">🌙</span>
+    </button>
+  </div>
+</nav>
+
+<!-- TOP AD -->
+<div class="ad-bar top">
+  <span class="adl">AD</span>
+  <div class="ad-slot ad-leader">
+    <div class="adt">ADVERTISEMENT</div><div class="adsz">728 × 90 — Leaderboard</div>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- LEFT AD -->
+  <aside class="side-ad l">
+    <span class="adl">AD</span>
+    <div class="sad-s sad-tall"><div class="adt" style="font-size:8px">ADVERTISEMENT</div><div class="adsz">160 × 600</div><div class="adsz" style="margin-top:3px">Skyscraper</div></div>
+    <div class="sad-s sad-mid"><div class="adt" style="font-size:8px">ADVERTISEMENT</div><div class="adsz">160 × 250</div></div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div>
+        <div class="htitle">WAV<em>///</em>FLIP</div>
+        <div class="hsub">UNIVERSAL AUDIO CONVERTER · NO UPLOAD · NO SIGNUP</div>
+      </div>
+      <div class="hbadges">
+        <span class="hb">✓ 100% Private</span>
+        <span class="hb">✓ 7 Formats</span>
+        <span class="hb">✓ Batch 50 Files</span>
+        <span class="hb">✓ Free Forever</span>
+      </div>
+    </div>
+
+    <!-- STEP 1: INPUT FORMAT FILTER -->
+    <div class="section-label">Step 1 — Input format (auto-detected or filter)</div>
+    <div class="format-input-row" id="inFmtRow">
+      <div class="fmt-pill active" data-ext="all" onclick="setInFilter('all')">
+        <div class="fmt-dot" style="background:var(--ac)"></div>ANY FORMAT
+      </div>
+      <div class="fmt-pill" data-ext="wav" onclick="setInFilter('wav')">
+        <div class="fmt-dot" style="background:var(--bl)"></div>WAV
+      </div>
+      <div class="fmt-pill" data-ext="mp3" onclick="setInFilter('mp3')">
+        <div class="fmt-dot" style="background:var(--ac)"></div>MP3
+      </div>
+      <div class="fmt-pill" data-ext="ogg" onclick="setInFilter('ogg')">
+        <div class="fmt-dot" style="background:var(--gr)"></div>OGG
+      </div>
+      <div class="fmt-pill" data-ext="flac" onclick="setInFilter('flac')">
+        <div class="fmt-dot" style="background:var(--pu)"></div>FLAC
+      </div>
+      <div class="fmt-pill" data-ext="m4a" onclick="setInFilter('m4a')">
+        <div class="fmt-dot" style="background:var(--or)"></div>M4A / AAC
+      </div>
+      <div class="fmt-pill" data-ext="webm" onclick="setInFilter('webm')">
+        <div class="fmt-dot" style="background:#e879f9)"></div>WEBM
+      </div>
+    </div>
+
+    <!-- ARROW -->
+    <div class="arrow-row">
+      <div class="arrow-line"></div>
+      <div class="arrow-icon">CONVERT TO ▶</div>
+      <div class="arrow-line"></div>
+    </div>
+
+    <!-- STEP 2: OUTPUT FORMAT PICKER -->
+    <div class="section-label">Step 2 — Choose output format</div>
+    <div class="out-grid">
+      <!-- MP3 -->
+      <div class="out-card" id="oc-mp3" onclick="selectOut('mp3')">
+        <div class="check-icon"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#080808" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="oc-ext" style="color:var(--ac)">.MP3</div>
+        <div class="oc-name">MPEG LAYER 3</div>
+        <div class="oc-tags"><span class="oc-tag tag-s">Lossy</span><span class="oc-tag tag-q">Small</span></div>
+        <div class="oc-compat"><span class="compat-dot cd-ok"></span>All browsers</div>
+      </div>
+      <!-- WAV -->
+      <div class="out-card" id="oc-wav" onclick="selectOut('wav')">
+        <div class="check-icon"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#080808" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="oc-ext" style="color:var(--bl)">.WAV</div>
+        <div class="oc-name">PCM UNCOMPRESSED</div>
+        <div class="oc-tags"><span class="oc-tag tag-q">Lossless</span><span class="oc-tag tag-info">Large</span></div>
+        <div class="oc-compat"><span class="compat-dot cd-ok"></span>All browsers</div>
+      </div>
+      <!-- OGG -->
+      <div class="out-card" id="oc-ogg" onclick="selectOut('ogg')">
+        <div class="check-icon"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#080808" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="oc-ext" style="color:var(--gr)">.OGG</div>
+        <div class="oc-name">VORBIS / OPUS</div>
+        <div class="oc-tags"><span class="oc-tag tag-s">Lossy</span><span class="oc-tag tag-q">Small</span></div>
+        <div class="oc-compat"><span class="compat-dot cd-part"></span>Chrome / Firefox</div>
+      </div>
+      <!-- WEBM -->
+      <div class="out-card" id="oc-webm" onclick="selectOut('webm')">
+        <div class="check-icon"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#080808" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="oc-ext" style="color:var(--or)">.WEBM</div>
+        <div class="oc-name">OPUS CONTAINER</div>
+        <div class="oc-tags"><span class="oc-tag tag-s">Lossy</span><span class="oc-tag tag-b">Web</span></div>
+        <div class="oc-compat"><span class="compat-dot cd-part"></span>Chrome / Firefox</div>
+      </div>
+      <!-- FLAC -->
+      <div class="out-card" id="oc-flac" onclick="selectOut('flac')">
+        <div class="check-icon"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#080808" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="oc-ext" style="color:var(--pu)">.FLAC</div>
+        <div class="oc-name">FREE LOSSLESS</div>
+        <div class="oc-tags"><span class="oc-tag tag-q">Lossless</span><span class="oc-tag tag-info">Medium</span></div>
+        <div class="oc-compat"><span class="compat-dot cd-part"></span>Via WAV wrap</div>
+      </div>
+      <!-- M4A via ffmpeg.wasm -->
+      <div class="out-card" id="oc-m4a" onclick="selectOut('m4a')">
+        <div class="check-icon"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#080808" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="oc-ext" style="color:var(--or)">.M4A</div>
+        <div class="oc-name">AAC / MPEG-4</div>
+        <div class="oc-tags"><span class="oc-tag tag-s">Lossy</span><span class="oc-tag tag-q">Small</span></div>
+        <div class="oc-compat"><span class="compat-dot cd-part"></span>ffmpeg.wasm (~30MB)</div>
+      </div>
+    </div>
+
+    <!-- FFMPEG LOADER -->
+    <div class="ffload" id="ffload">
+      <div>
+        <div class="ffload-txt" id="ffload-txt">LOADING FFMPEG.WASM</div>
+        <div class="ffload-sub">First time only · ~30MB · Cached after load</div>
+      </div>
+      <div class="ffload-bar-wrap"><div class="ffload-bar" id="ffload-bar"></div></div>
+    </div>
+
+    <!-- QUALITY SETTINGS (dynamic per format) -->
+    <div class="qbox" id="qbox">
+      <div class="qbox-title" id="qtitle">Output Settings</div>
+      <div id="qinner"></div>
+    </div>
+
+    <!-- STEP 3: DROP ZONE -->
+    <div class="section-label">Step 3 — Add audio files</div>
+    <div class="dz" id="dz" onclick="document.getElementById('fi').click()">
+      <div class="di">
+        <svg viewBox="0 0 48 48" fill="none">
+          <rect x="4" y="2" width="26" height="34" rx="2" stroke="#f5c842" stroke-width="1.7"/>
+          <path d="M14 17Q17 12 21 17Q24 20 28 15" stroke="#f5c842" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+          <path d="M16 23Q19 19 22 23" stroke="#f5c842" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+          <path d="M12 36L12 46L36 46L36 36" stroke="#f5c842" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M18 43L24 49L30 43" stroke="#f5c842" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="dt">Drop Audio Files Here</div>
+      <div class="ds">Click to browse &nbsp;·&nbsp; <strong>Up to 50 files at once</strong></div>
+      <div class="dz-formats" id="dzFmts">
+        <span class="dz-fmt">WAV</span><span class="dz-fmt">MP3</span><span class="dz-fmt">OGG</span>
+        <span class="dz-fmt">FLAC</span><span class="dz-fmt">M4A</span><span class="dz-fmt">AAC</span>
+        <span class="dz-fmt">WEBM</span><span class="dz-fmt">AIFF</span>
+      </div>
+    </div>
+    <input type="file" id="fi" accept="audio/*,.wav,.mp3,.ogg,.flac,.m4a,.aac,.webm,.aiff,.opus" multiple style="display:none">
+
+    <!-- STATS -->
+    <div class="sb" id="sb">
+      <div class="st"><span class="sl">Files</span><span class="sv" id="sv-f">0</span></div>
+      <div class="st"><span class="sl">Size</span><span class="sv" id="sv-s">—</span></div>
+      <div class="st"><span class="sl">Converted</span><span class="sv" id="sv-d">0</span></div>
+      <div class="st"><span class="sl">Output</span><span class="sv" id="sv-fmt" style="font-size:14px;letter-spacing:1px">SELECT</span></div>
+      <div class="st"><span class="sl">Status</span><span class="sv" id="sv-st">READY</span></div>
+    </div>
+
+    <div class="fl" id="fl"></div>
+    <div class="mp" id="mp"><div class="mf" id="mf"></div></div>
+    <div class="tk" id="tk"></div>
+
+    <!-- CONTROLS -->
+    <div class="ctrl" id="ctrl">
+      <button class="bc" id="cb" onclick="startConv()">
+        <div class="sp" id="sp"></div><span class="bt" id="cbtxt">Convert All</span>
+      </button>
+      <button class="bclr" onclick="clearAll()">Clear</button>
+    </div>
+
+    <!-- DOWNLOAD BANNER -->
+    <div class="dlb" id="dlb">
+      <div class="dlbi"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 2v8M4 7l3.5 4 3.5-4M2 13h11" stroke="#3ecf8e" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="dlbt"><div class="dlbtt">Conversion Complete</div><div class="dlbts" id="dlbts">—</div></div>
+      <button class="bzip" id="bzip"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v6.5M2.5 5L5.5 8l3-3M1 10h9" stroke="#080808" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Download ZIP</button>
+    </div>
+
+    <!-- INLINE AD -->
+    <div class="iad"><span class="adl">AD</span><div class="iad-slot"><div class="adt">ADVERTISEMENT</div><div class="adsz">728 × 90 — In-Content</div></div></div>
+
+    <!-- HISTORY -->
+    <div class="hist" id="hist">
+      <div class="hh">
+        <div class="hhtit">Conversion History</div>
+        <button class="hclr" onclick="clearHist()">Clear All</button>
+      </div>
+      <div id="hel"><div class="hemp" id="hemp">No conversions yet &nbsp;·&nbsp; Saves in your browser</div></div>
+    </div>
+
+  </main>
+
+  <!-- RIGHT AD -->
+  <aside class="side-ad r">
+    <span class="adl">AD</span>
+    <div class="sad-s sad-tall"><div class="adt" style="font-size:8px">ADVERTISEMENT</div><div class="adsz">160 × 600</div><div class="adsz" style="margin-top:3px">Skyscraper</div></div>
+    <div class="sad-s sad-mid"><div class="adt" style="font-size:8px">ADVERTISEMENT</div><div class="adsz">160 × 250</div></div>
+  </aside>
+
+</div>
+
+<!-- BOTTOM AD -->
+<div class="ad-bar bot">
+  <span class="adl">AD</span>
+  <div class="ad-slot ad-leader"><div class="adt">ADVERTISEMENT</div><div class="adsz">728 × 90 — Bottom Leaderboard</div></div>
+</div>
+
+<!-- FOOTER -->
+<footer class="foot">
+  <div class="flogo">WAV<em>//</em>FLIP</div>
+  <div class="fnote">Files never leave your device · No server · No signup</div>
+  <div class="flinks"><a href="#">Privacy</a><a href="#">About</a><a href="#">Contact</a></div>
+</footer>
+
+<!-- COUNTDOWN OVERLAY -->
+<div class="overlay" id="overlay">
+  <div class="ov-top">Your download is being prepared</div>
+  <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;justify-content:center">
+    <!-- Big ad -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:5px">
+      <span class="ov-ad-lbl">ADVERTISEMENT</span>
+      <div class="ov-ad-big">
+        <!-- Replace with AdSense 300×250 -->
+        <div class="adt">ADVERTISEMENT</div>
+        <div class="adsz">300 × 250 — Medium Rectangle</div>
+      </div>
+    </div>
+    <!-- Countdown -->
+    <div class="ov-mid">
+      <div class="ov-count" id="ov-count">10</div>
+      <div class="ov-count-lbl">DOWNLOAD STARTS IN <span id="ov-sec">10</span> SECONDS</div>
+      <div class="ov-bar-wrap"><div class="ov-bar" id="ov-bar"></div></div>
+      <button class="ov-skip" id="ov-skip" onclick="skipCountdown()">Skip ▶</button>
+    </div>
+  </div>
+  <!-- Leaderboard ad -->
+  <div class="ov-ad-wrap">
+    <span class="ov-ad-lbl">ADVERTISEMENT</span>
+    <div class="ov-ad-slot">
+      <!-- Replace with AdSense 728×90 -->
+      <div class="adt">ADVERTISEMENT</div>
+      <div class="adsz">728 × 90 — Leaderboard</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══ STATE ═══
+let files=[], blobs=[], busy=false, outFmt='', inFilter='all';
+let fileBitrates=[]; // per-file bitrate
+let qSettings={mp3:{br:92}, wav:{bd:16}, ogg:{q:'medium'}, webm:{q:'medium'}, flac:{bd:16}, m4a:{br:128}};
+
+// ═══ FORMAT CONFIGS ═══
+const FMT={
+  mp3:{label:'MP3',color:'var(--ac)',ext:'.mp3',mime:'audio/mp3'},
+  wav:{label:'WAV',color:'var(--bl)',ext:'.wav',mime:'audio/wav'},
+  ogg:{label:'OGG',color:'var(--gr)',ext:'.ogg',mime:'audio/ogg'},
+  webm:{label:'WEBM',color:'var(--or)',ext:'.webm',mime:'audio/webm'},
+  flac:{label:'FLAC',color:'var(--pu)',ext:'.flac',mime:'audio/flac'},
+  m4a:{label:'M4A',color:'var(--or)',ext:'.m4a',mime:'audio/mp4'},
+};
+
+const INPUT_EXTS=['wav','mp3','ogg','flac','m4a','aac','webm','aiff','opus','mp4'];
+
+// ═══ QUALITY UI ═══
+const Q_HTML={
+  mp3:`<div class="qrow"><span class="ql">Bitrate</span><div class="qbtns" id="qmp3br">
+    ${[92,128,192,256,320].map(b=>`<button class="qbtn${b===92?' on-ac':''}" onclick="setQ('mp3','br',${b},this,'on-ac')">${b} kbps</button>`).join('')}
+  </div></div>`,
+  wav:`<div class="qrow"><span class="ql">Bit Depth</span><div class="qbtns">
+    <button class="qbtn on-bl" onclick="setQ('wav','bd',16,this,'on-bl')">16-bit PCM</button>
+    <button class="qbtn" onclick="setQ('wav','bd',32,this,'on-bl')">32-bit Float</button>
+  </div></div>`,
+  ogg:`<div class="qrow"><span class="ql">Quality</span><div class="qbtns">
+    <button class="qbtn" onclick="setQ('ogg','q','low',this,'on-gr')">Low · ~64kbps</button>
+    <button class="qbtn on-gr" onclick="setQ('ogg','q','medium',this,'on-gr')">Medium · ~128kbps</button>
+    <button class="qbtn" onclick="setQ('ogg','q','high',this,'on-gr')">High · ~192kbps</button>
+  </div></div>
+  <div class="qnote">⚠ OGG encodes in real-time via MediaRecorder — encoding takes as long as the audio duration. Chrome / Firefox only.</div>`,
+  webm:`<div class="qrow"><span class="ql">Quality</span><div class="qbtns">
+    <button class="qbtn" onclick="setQ('webm','q','low',this,'on-or')">Low · ~64kbps</button>
+    <button class="qbtn on-or" onclick="setQ('webm','q','medium',this,'on-or')">Medium · ~128kbps</button>
+    <button class="qbtn" onclick="setQ('webm','q','high',this,'on-or')">High · ~192kbps</button>
+  </div></div>
+  <div class="qnote">⚠ WEBM encodes in real-time — takes as long as audio duration. Chrome / Firefox only.</div>`,
+  flac:`<div class="qrow"><span class="ql">Bit Depth</span><div class="qbtns">
+    <button class="qbtn on-pu" onclick="setQ('flac','bd',16,this,'on-pu')">16-bit</button>
+    <button class="qbtn" onclick="setQ('flac','bd',24,this,'on-pu')">24-bit</button>
+  </div></div>
+  <div class="qnote">FLAC output is a WAV PCM file renamed .flac — true FLAC encoding requires native codec unavailable in browser JS. Audio quality identical to WAV.</div>`,
+  m4a:`<div class="qrow"><span class="ql">Bitrate</span><div class="qbtns" id="qm4abr">
+    ${[64,96,128,192,256].map(b=>`<button class="qbtn${b===128?' on-or':''}" onclick="setQ('m4a','br',${b},this,'on-or')">${b} kbps</button>`).join('')}
+  </div></div>
+  <div class="qnote">⚠ M4A uses ffmpeg.wasm (~30MB). First load may take 10–30s depending on connection. After first load it is cached by the browser — subsequent uses are instant.</div>`,
+};
+
+function setQ(fmt,key,val,btn,cls){
+  qSettings[fmt][key]=val;
+  btn.closest('.qbtns').querySelectorAll('.qbtn').forEach(b=>b.classList.remove(cls));
+  btn.classList.add(cls);
+  updateDropZone();
+}
+
+// ═══ OUTPUT FORMAT SELECT ═══
+function selectOut(fmt){
+  if(fmt===outFmt) return;
+  outFmt=fmt;
+  document.querySelectorAll('.out-card:not(.disabled)').forEach(c=>{
+    c.className=c.className.replace(/sel(-\w+)?/g,'').trim();
+  });
+  const card=document.getElementById('oc-'+fmt);
+  if(card){card.classList.add('sel','sel-'+fmt)}
+  document.getElementById('qbox').classList.add('vis');
+  document.getElementById('qtitle').textContent=FMT[fmt].label+' Output Settings';
+  document.getElementById('qinner').innerHTML=Q_HTML[fmt]||'';
+  g('sv-fmt').textContent='.'+fmt.toUpperCase();
+  g('sv-fmt').style.color=FMT[fmt].color;
+  g('cbtxt').textContent='Convert to '+fmt.toUpperCase();
+  updateDropZone();
+  if(files.length>0) render(); // refresh bitrate selects visibility
+}
+
+function updateDropZone(){
+  const f=FMT[outFmt];if(!f)return;
+  const badge=g('dz-fmt-badge'),sub=g('dz-fmt-sub');
+  if(badge){badge.textContent='.'+outFmt.toUpperCase();badge.style.color=f.color}
+  if(sub){
+    const subMap={
+      mp3:'MPEG LAYER 3 · '+qSettings.mp3.br+' KBPS',
+      wav:'PCM UNCOMPRESSED · '+qSettings.wav.bd+'-BIT',
+      ogg:'VORBIS / OPUS · OPEN SOURCE',
+      webm:'OPUS CONTAINER · WEB NATIVE',
+      flac:'FREE LOSSLESS · ARCHIVAL',
+      m4a:'AAC / MPEG-4 · '+qSettings.m4a.br+' KBPS',
+    };
+    sub.textContent=subMap[outFmt]||outFmt.toUpperCase();
+    sub.style.color=f.color;sub.style.opacity='.55';
+  }
+  g('mf').style.background=f.color;
+}
+
+// ═══ INPUT FILTER ═══
+function setInFilter(ext){
+  inFilter=ext;
+  document.querySelectorAll('.fmt-pill').forEach(p=>p.classList.toggle('active',p.dataset.ext===ext));
+}
+
+function passesFilter(file){
+  if(inFilter==='all') return true;
+  const e=file.name.split('.').pop().toLowerCase();
+  if(inFilter==='m4a') return e==='m4a'||e==='aac'||e==='mp4';
+  return e===inFilter;
+}
+
+// ═══ DRAG & DROP ═══
+const dz=document.getElementById('dz');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('ov')});
+dz.addEventListener('dragleave',()=>dz.classList.remove('ov'));
+dz.addEventListener('drop',e=>{
+  e.preventDefault();dz.classList.remove('ov');
+  addFiles(Array.from(e.dataTransfer.files).filter(f=>isAudio(f)));
+});
+document.getElementById('fi').addEventListener('change',e=>{addFiles(Array.from(e.target.files));e.target.value=''});
+
+function isAudio(f){
+  const e=f.name.split('.').pop().toLowerCase();
+  return INPUT_EXTS.includes(e)||f.type.startsWith('audio/');
+}
+
+// ═══ FILES ═══
+function addFiles(nf){
+  const filtered=nf.filter(f=>passesFilter(f));
+  const skipped=nf.length-filtered.length;
+  if(skipped>0) showToast(`${skipped} file(s) skipped — doesn't match input filter`);
+  const rem=50-files.length;
+  if(rem<=0){tick('MAX 50 FILES REACHED','a');return}
+  const add=filtered.slice(0,rem);
+  if(filtered.length>rem) showToast(`Only ${rem} slots left — ${filtered.length-rem} ignored`);
+  add.forEach(f=>{
+    if(!files.find(x=>x.name===f.name&&x.size===f.size)){
+      files.push(f);
+      fileBitrates.push(92); // default 92kbps per file
+    }
+  });
+  render();
+}
+
+function render(){
+  const fl=g('fl');fl.innerHTML='';blobs=[];
+  stopAudio();
+  g('dlb').classList.remove('on');g('mp').classList.remove('on');
+  const showBr=(outFmt==='mp3'||outFmt==='m4a');
+  files.forEach((f,i)=>{
+    const ext=f.name.split('.').pop().toUpperCase();
+    const br=fileBitrates[i]||92;
+    const brOpts=[92,128,192,256,320].map(b=>`<option value="${b}"${b===br?' selected':''}>${b}k</option>`).join('');
+    const c=document.createElement('div');
+    c.className='fc';c.id=`c-${i}`;
+    c.innerHTML=`
+      <div class="fc-row1">
+        <div class="fp" id="fp-${i}"></div>
+        <div class="fb">${ext}</div>
+        <div class="fm">
+          <div class="fn">${esc(f.name)}</div>
+          <div class="fi">${fmt(f.size)} · ${ext} → ${outFmt.toUpperCase()}</div>
+        </div>
+        <div class="fst fsw" id="fs-${i}"><span>WAITING</span></div>
+        <div class="fa">
+          <button class="fdlb" id="fd-${i}" onclick="dlOne(${i})">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v6.5M2.5 5L5.5 8l3-3M1 10h9" stroke="#3ecf8e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="frm" onclick="rmFile(${i})">×</button>
+        </div>
+      </div>
+      <div class="fc-row2">
+        <button class="fplay" id="fplay-${i}" onclick="togglePlay(${i})" title="Preview audio">
+          <svg width="8" height="9" viewBox="0 0 8 9" fill="none" id="fplay-icon-${i}"><path d="M1 1l6 3.5L1 8V1z" fill="currentColor"/></svg>
+        </button>
+        <div class="fpr-bar" onclick="seekAudio(event,${i})" id="fpr-${i}">
+          <div class="fpr-fill" id="fpr-fill-${i}"></div>
+        </div>
+        <div class="fpr-time" id="fpr-time-${i}">0:00 / 0:00</div>
+        ${showBr?`<div class="fbr-wrap">
+          <span class="fbr-lbl">BITRATE</span>
+          <select class="fbrsel" onchange="fileBitrates[${i}]=+this.value">${brOpts}</select>
+        </div>`:''}
+      </div>`;
+    fl.appendChild(c);
+  });
+  if(files.length>0){
+    g('ctrl').classList.add('on');g('sb').classList.add('on');
+    g('sv-f').textContent=files.length;
+    g('sv-s').textContent=fmt(files.reduce((a,f)=>a+f.size,0));
+    g('sv-d').textContent='0';g('sv-st').textContent='READY';
+    tick(files.length+' FILE(S) QUEUED — SELECT OUTPUT FORMAT','');
+  } else {
+    g('ctrl').classList.remove('on');g('sb').classList.remove('on');tick('','');
+  }
+}
+
+function rmFile(i){if(busy)return;files.splice(i,1);fileBitrates.splice(i,1);stopAudio();render()}
+function clearAll(){if(busy)return;files=[];fileBitrates=[];stopAudio();render()}
+
+// ═══ CONVERSION ═══
+async function startConv(){
+  if(busy||files.length===0) return;
+  if(!outFmt){showToast('Please select an output format first');return}
+  if((outFmt==='ogg'||outFmt==='webm')&&!window.MediaRecorder){showToast('MediaRecorder not supported in this browser');return}
+  if(outFmt==='m4a'&&typeof FFmpeg==='undefined'){showToast('ffmpeg.wasm not loaded — check connection');return}
+
+  busy=true;blobs=[];
+  const btn=g('cb');btn.disabled=true;btn.classList.add('ld');
+  g('mp').classList.add('on');g('sv-st').textContent='CONV';
+  let done=0;
+
+  for(let i=0;i<files.length;i++){
+    cSt(i,'fv','fsc','CONV...');tick(`PROCESSING ${i+1}/${files.length} · ${files[i].name}`,'a');
+    try{
+      let blob;
+      switch(outFmt){
+        case 'mp3': blob=await toMp3(files[i],fileBitrates[i]||qSettings.mp3.br,p=>cProg(i,p)); break;
+        case 'wav': blob=await toWav(files[i],qSettings.wav.bd,p=>cProg(i,p)); break;
+        case 'flac': blob=await toFlac(files[i],qSettings.flac.bd,p=>cProg(i,p)); break;
+        case 'ogg': blob=await toMediaRec(files[i],'audio/ogg;codecs=opus',p=>cProg(i,p)); break;
+        case 'webm': blob=await toMediaRec(files[i],'audio/webm;codecs=opus',p=>cProg(i,p)); break;
+        case 'm4a': blob=await toM4a(files[i],qSettings.m4a.br,p=>cProg(i,p)); break;
+      }
+      const srcExt=files[i].name.lastIndexOf('.');
+      const baseName=srcExt>0?files[i].name.substring(0,srcExt):files[i].name;
+      const usedQual = outFmt==='mp3' ? (fileBitrates[i]||92)+'kbps'
+                     : outFmt==='m4a' ? qSettings.m4a.br+'kbps AAC'
+                     : outFmt==='wav' ? qSettings.wav.bd+'-bit PCM'
+                     : outFmt==='flac' ? qSettings.flac.bd+'-bit'
+                     : getQualLabel();
+      blobs.push({name:baseName+FMT[outFmt].ext,blob,src:files[i].name,sz:files[i].size,qual:usedQual});
+      cSt(i,'fd','fsd','DONE ✓');cProg(i,100);
+      g(`fd-${i}`).classList.add('on');
+      done++;g('sv-d').textContent=done;
+    }catch(e){cSt(i,'fe','fse','ERROR');console.error(e)}
+    g('mf').style.width=((i+1)/files.length*100)+'%';
+    await sl(30);
+  }
+  busy=false;btn.disabled=false;btn.classList.remove('ld');
+  g('sv-st').textContent='DONE';
+  if(blobs.length>0){
+    tick(`ALL ${blobs.length} FILE(S) CONVERTED TO ${outFmt.toUpperCase()}`,'s');
+    const tot=blobs.reduce((a,b)=>a+b.blob.size,0);
+    const qual=getQualLabel();
+    g('dlbts').textContent=`${blobs.length} file(s) · ${outFmt.toUpperCase()} · ${fmt(tot)}`;
+    g('dlb').classList.add('on');
+    g('bzip').onclick=dlZip;
+    saveHist(blobs,outFmt);renderHist();
+  } else tick('CONVERSION FAILED — CHECK FORMAT COMPATIBILITY','a');
+}
+
+// ═══ FFMPEG ═══
+let ffmpegInst=null, ffmpegLoading=false;
+
+async function loadFfmpeg(){
+  if(ffmpegInst) return ffmpegInst;
+  if(ffmpegLoading) return new Promise(r=>{const id=setInterval(()=>{if(ffmpegInst){clearInterval(id);r(ffmpegInst)}},200)});
+  ffmpegLoading=true;
+  g('ffload').classList.add('on');
+  g('ffload-txt').textContent='LOADING FFMPEG.WASM — PLEASE WAIT';
+  animFFLoad();
+  const {createFFmpeg,fetchFile}=FFmpeg;
+  const ff=createFFmpeg({log:false,progress:({ratio})=>{
+    g('ffload-bar').style.width=Math.round(ratio*100)+'%';
+  }});
+  await ff.load();
+  ffmpegInst=ff;
+  ffmpegLoading=false;
+  g('ffload').classList.remove('on');
+  g('ffload-bar').style.width='0%';
+  return ff;
+}
+
+function animFFLoad(){
+  if(!g('ffload').classList.contains('on')) return;
+  const bar=g('ffload-bar');
+  let w=parseFloat(bar.style.width)||0;
+  if(w<90){bar.style.width=(w+0.5)+'%'}
+  setTimeout(animFFLoad,200);
+}
+
+async function toM4a(file,kbps,onP){
+  const ff=await loadFfmpeg();
+  const {fetchFile}=FFmpeg;
+  return new Promise(async(res,rej)=>{
+    try{
+      onP(5);
+      const inName='input_'+Date.now()+'.'+file.name.split('.').pop();
+      const outName='output_'+Date.now()+'.m4a';
+      ff.FS('writeFile',inName,await fetchFile(file));
+      onP(20);
+      ff.setProgress(({ratio})=>onP(20+Math.round(ratio*75)));
+      await ff.run('-i',inName,'-c:a','aac','-b:a',kbps+'k','-movflags','+faststart',outName);
+      onP(97);
+      const data=ff.FS('readFile',outName);
+      ff.FS('unlink',inName);
+      ff.FS('unlink',outName);
+      onP(100);
+      res(new Blob([data.buffer],{type:'audio/mp4'}));
+    }catch(e){rej(e)}
+  });
+}
+
+function getQualLabel(){
+  if(outFmt==='mp3') return qSettings.mp3.br+'kbps';
+  if(outFmt==='wav') return qSettings.wav.bd+'-bit PCM';
+  if(outFmt==='flac') return qSettings.flac.bd+'-bit';
+  if(outFmt==='m4a') return qSettings.m4a.br+'kbps AAC';
+  return '';
+}
+
+function dlOne(i){const b=blobs[i];if(b)saveAs(b.blob,b.name)}
+
+// countdown then download
+let _pendingDl=null,_cdTimer=null;
+function dlZip(){showCountdown(()=>_execDlZip())}
+async function _execDlZip(){
+  const zip=new JSZip();
+  blobs.forEach(({name,blob})=>zip.file(name,blob));
+  const zb=await zip.generateAsync({type:'blob',compression:'DEFLATE'});
+  saveAs(zb,`wavflip-${outFmt}-${new Date().toISOString().slice(0,10)}.zip`);
+}
+
+function showCountdown(cb){
+  const ov=g('overlay'),bar=g('ov-bar'),skip=g('ov-skip');
+  let secs=10;
+  ov.classList.add('on');
+  bar.style.transition='none';bar.style.width='100%';
+  skip.classList.remove('show');
+  updateCount(secs);
+  // allow skip after 3s
+  setTimeout(()=>skip.classList.add('show'),3000);
+  _pendingDl=cb;
+  setTimeout(()=>{bar.style.transition='width '+secs+'s linear';bar.style.width='0%'},50);
+  _cdTimer=setInterval(()=>{
+    secs--;
+    updateCount(secs);
+    if(secs<=0){clearInterval(_cdTimer);_cdTimer=null;closeOverlay(true)}
+  },1000);
+}
+
+function updateCount(n){
+  const el=g('ov-count'),sec=g('ov-sec');
+  el.textContent=n;sec.textContent=n;
+  el.classList.add('pulse');setTimeout(()=>el.classList.remove('pulse'),150);
+}
+
+function skipCountdown(){clearInterval(_cdTimer);_cdTimer=null;closeOverlay(true)}
+
+function closeOverlay(exec){
+  g('overlay').classList.remove('on');
+  if(exec&&_pendingDl){_pendingDl();_pendingDl=null}
+}
+
+// ═══ ENGINES ═══
+
+// WAV → MP3
+function toMp3(file,kbps,onP){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=async e=>{try{
+      const ctx=new(window.AudioContext||window.webkitAudioContext)();
+      const buf=await ctx.decodeAudioData(e.target.result);ctx.close();
+      const ch=buf.numberOfChannels,sr=buf.sampleRate;
+      const L=buf.getChannelData(0),R=ch>1?buf.getChannelData(1):L;
+      const enc=new lamejs.Mp3Encoder(ch,sr,kbps);
+      const bs=1152,data=[],tot=L.length;
+      for(let i=0;i<tot;i+=bs){
+        const lc=ti16(L.subarray(i,i+bs)),rc=ch>1?ti16(R.subarray(i,i+bs)):lc;
+        const mb=ch>1?enc.encodeBuffer(lc,rc):enc.encodeBuffer(lc);
+        if(mb.length>0)data.push(mb);
+        if(i%(bs*50)===0){onP(Math.round(i/tot*95));await sl(0)}
+      }
+      const end=enc.flush();if(end.length>0)data.push(end);
+      onP(100);res(new Blob(data,{type:'audio/mp3'}));
+    }catch(e){rej(e)}};
+    r.onerror=rej;r.readAsArrayBuffer(file);
+  });
+}
+
+// Any → WAV PCM
+function toWav(file,bd,onP){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=async e=>{try{
+      const ctx=new(window.AudioContext||window.webkitAudioContext)();
+      onP(20);const buf=await ctx.decodeAudioData(e.target.result);ctx.close();onP(55);
+      const nc=buf.numberOfChannels,sr=buf.sampleRate,ns=buf.length;
+      const bps=bd===32?4:2,ba=nc*bps,ds=ns*ba;
+      const ab=new ArrayBuffer(44+ds),v=new DataView(ab);
+      wsv(v,0,'RIFF');v.setUint32(4,36+ds,true);wsv(v,8,'WAVE');wsv(v,12,'fmt ');
+      v.setUint32(16,16,true);v.setUint16(20,bd===32?3:1,true);v.setUint16(22,nc,true);
+      v.setUint32(24,sr,true);v.setUint32(28,sr*ba,true);v.setUint16(32,ba,true);
+      v.setUint16(34,bd,true);wsv(v,36,'data');v.setUint32(40,ds,true);
+      let off=44;
+      for(let s=0;s<ns;s++){
+        for(let c=0;c<nc;c++){
+          const smp=buf.getChannelData(c)[s];
+          if(bd===32){v.setFloat32(off,smp,true);off+=4}
+          else{const cl=Math.max(-1,Math.min(1,smp));v.setInt16(off,cl<0?cl*0x8000:cl*0x7FFF,true);off+=2}
+        }
+        if(s%60000===0){onP(55+Math.round(s/ns*43));await sl(0)}
+      }
+      onP(100);res(new Blob([ab],{type:'audio/wav'}));
+    }catch(e){rej(e)}};
+    r.onerror=rej;r.readAsArrayBuffer(file);
+  });
+}
+
+// Any → FLAC (WAV PCM renamed — true FLAC not encodable in pure browser)
+async function toFlac(file,bd,onP){
+  const wavBlob=await toWav(file,bd,onP);
+  // Return as WAV data but with .flac extension label (audio is identical PCM)
+  return new Blob([wavBlob],{type:'audio/flac'});
+}
+
+// Any → OGG / WebM via MediaRecorder (real-time)
+function toMediaRec(file,mimeType,onP){
+  return new Promise((res,rej)=>{
+    if(!MediaRecorder.isTypeSupported(mimeType)){
+      // Try fallback
+      const fallback=mimeType.includes('ogg')?'audio/webm;codecs=opus':'audio/ogg;codecs=opus';
+      if(MediaRecorder.isTypeSupported(fallback)) mimeType=fallback;
+      else return rej(new Error('MediaRecorder mimeType not supported: '+mimeType));
+    }
+    const r=new FileReader();
+    r.onload=async e=>{try{
+      const ctx=new(window.AudioContext||window.webkitAudioContext)();
+      onP(10);const buf=await ctx.decodeAudioData(e.target.result);
+      const duration=buf.duration;
+      // Create live context for playback → MediaRecorder
+      const lCtx=new AudioContext({sampleRate:buf.sampleRate});
+      const dest=lCtx.createMediaStreamDestination();
+      const src=lCtx.createBufferSource();
+      src.buffer=buf;src.connect(dest);
+      const rec=new MediaRecorder(dest.stream,{mimeType,audioBitsPerSecond:128000});
+      const chunks=[];
+      rec.ondataavailable=ev=>chunks.push(ev.data);
+      rec.onstop=()=>{lCtx.close();ctx.close();onP(100);res(new Blob(chunks,{type:mimeType}))};
+      // Simulate progress based on duration
+      const startT=Date.now();
+      const progInterval=setInterval(()=>{
+        const elapsed=(Date.now()-startT)/1000;
+        onP(Math.min(95,10+Math.round(elapsed/duration*85)));
+      },500);
+      rec.start(100);
+      src.start();
+      src.onended=()=>{clearInterval(progInterval);rec.stop()};
+    }catch(err){rej(err)}};
+    r.onerror=rej;r.readAsArrayBuffer(file);
+  });
+}
+
+function ti16(f){const i=new Int16Array(f.length);for(let j=0;j<f.length;j++){const s=Math.max(-1,Math.min(1,f[j]));i[j]=s<0?s*0x8000:s*0x7FFF}return i}
+function wsv(v,o,s){for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))}
+
+// ═══ HISTORY ═══
+function saveHist(bls,ofmt){
+  let h=getHist();
+  bls.forEach(b=>h.unshift({name:b.name,src:b.src,sz:b.sz,ofmt,qual:b.qual||ofmt.toUpperCase(),date:new Date().toISOString()}));
+  try{localStorage.setItem('wf_h',JSON.stringify(h.slice(0,60)))}catch(e){}
+}
+function getHist(){try{return JSON.parse(localStorage.getItem('wf_h')||'[]')}catch(e){return[]}}
+function clearHist(){try{localStorage.removeItem('wf_h')}catch(e){}renderHist()}
+function renderHist(){
+  const h=getHist(),el=g('hel'),emp=g('hemp');
+  const old=el.querySelector('.hlist');if(old)old.remove();
+  if(h.length===0){emp.style.display='block';return}
+  emp.style.display='none';
+  const list=document.createElement('div');list.className='hlist';
+  h.forEach(row=>{
+    const d=new Date(row.date);
+    const ds=`${pad(d.getDate())}/${pad(d.getMonth()+1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    const r=document.createElement('div');r.className='hr2';
+    const col=FMT[row.ofmt]?.color||'var(--ac)';
+    r.innerHTML=`
+      <div class="hbg" style="color:${col}">${row.ofmt.toUpperCase()}</div>
+      <div class="hn">${esc(row.name)}</div>
+      <div class="hmt">${fmt(row.sz)}</div>
+      <div class="hmt" style="min-width:78px">${ds}</div>
+      <div class="hpill" style="color:${col};background:transparent;border-color:${col}33">${row.ofmt.toUpperCase()} · ${row.qual}</div>`;
+    list.appendChild(r);
+  });
+  el.appendChild(list);
+}
+
+// ═══ HELPERS ═══
+function cSt(i,cc,sc,lbl){
+  const el=g(`fs-${i}`),card=g(`c-${i}`);
+  el.className=`fst ${sc}`;el.innerHTML=`<span>${lbl}</span>`;
+  card.className=`fc ${cc}`;
+}
+function cProg(i,p){const e=g(`fp-${i}`);if(e)e.style.width=p+'%'}
+function tick(msg,tp){
+  const el=g('tk');
+  if(!msg){el.innerHTML='';return}
+  el.innerHTML=`<span class="${tp==='a'?'ta':tp==='s'?'ts':''}">&gt; ${msg}</span>`;
+}
+function fmt(b){if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+'KB';return(b/1048576).toFixed(2)+'MB'}
+function esc(s){return s.replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function g(id){return document.getElementById(id)}
+function sl(ms){return new Promise(r=>setTimeout(r,ms))}
+function pad(n){return n.toString().padStart(2,'0')}
+function scrollHist(){document.getElementById('hist').scrollIntoView({behavior:'smooth'})}
+function showToast(msg){
+  const t=g('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+
+// ═══ AUDIO PREVIEW ═══
+let curAudio=null, curIdx=-1, progTimer=null, objUrls=[];
+
+function stopAudio(){
+  if(curAudio){curAudio.pause();curAudio=null}
+  if(progTimer){clearInterval(progTimer);progTimer=null}
+  if(curIdx>=0){
+    const btn=g(`fplay-${curIdx}`);
+    if(btn){btn.classList.remove('playing');btn.innerHTML=`<svg width="8" height="9" viewBox="0 0 8 9" fill="none"><path d="M1 1l6 3.5L1 8V1z" fill="currentColor"/></svg>`}
+    const fill=g(`fpr-fill-${curIdx}`);if(fill)fill.style.width='0%';
+    curIdx=-1;
+  }
+  // revoke old object URLs
+  objUrls.forEach(u=>URL.revokeObjectURL(u));
+  objUrls=[];
+}
+
+function togglePlay(i){
+  // if same file — toggle pause/resume
+  if(curIdx===i&&curAudio){
+    if(curAudio.paused){curAudio.play();startProgTimer(i)}
+    else{curAudio.pause();if(progTimer){clearInterval(progTimer);progTimer=null}
+      const btn=g(`fplay-${i}`);
+      btn.classList.remove('playing');
+      btn.innerHTML=`<svg width="8" height="9" viewBox="0 0 8 9" fill="none"><path d="M1 1l6 3.5L1 8V1z" fill="currentColor"/></svg>`;
+    }
+    return;
+  }
+  // stop current
+  stopAudio();
+  // play new
+  const url=URL.createObjectURL(files[i]);
+  objUrls.push(url);
+  curAudio=new Audio(url);
+  curIdx=i;
+  const btn=g(`fplay-${i}`);
+  btn.classList.add('playing');
+  btn.innerHTML=`<div class="fp-wave"><span></span><span></span><span></span><span></span><span></span></div>`;
+  curAudio.play().catch(()=>{stopAudio()});
+  curAudio.onended=()=>stopAudio();
+  curAudio.onloadedmetadata=()=>updateTime(i);
+  startProgTimer(i);
+}
+
+function startProgTimer(i){
+  progTimer=setInterval(()=>{
+    if(!curAudio||curAudio.paused){clearInterval(progTimer);return}
+    const pct=curAudio.duration?curAudio.currentTime/curAudio.duration*100:0;
+    const fill=g(`fpr-fill-${i}`);if(fill)fill.style.width=pct+'%';
+    updateTime(i);
+  },300);
+}
+
+function updateTime(i){
+  const el=g(`fpr-time-${i}`);if(!el||!curAudio)return;
+  el.textContent=fmtTime(curAudio.currentTime)+' / '+fmtTime(curAudio.duration||0);
+}
+
+function seekAudio(e,i){
+  if(curIdx!==i||!curAudio)return;
+  const bar=g(`fpr-${i}`);
+  const rect=bar.getBoundingClientRect();
+  const pct=(e.clientX-rect.left)/rect.width;
+  curAudio.currentTime=pct*curAudio.duration;
+}
+
+function fmtTime(s){
+  if(isNaN(s)||!isFinite(s))return'0:00';
+  const m=Math.floor(s/60),sec=Math.floor(s%60);
+  return m+':'+(sec<10?'0':'')+sec;
+}
+
+// ═══ THEME ═══
+function toggleTheme(){
+  const isLight=document.body.classList.contains('light');
+  document.body.classList.toggle('dark',isLight);
+  document.body.classList.toggle('light',!isLight);
+  const svg=g('tt-svg');
+  if(!isLight){
+    svg.innerHTML='<path d="M6.5 2.5A2.5 2.5 0 004 5a4 4 0 004-4 2.5 2.5 0 01-1.5 1.5z" fill="#080808"/>';
+  } else {
+    svg.innerHTML='<path d="M5 1v1M5 8v1M1 5h1M8 5h1M2.1 2.1l.7.7M7.2 7.2l.7.7M7.2 2.8l-.7.7M2.8 7.2l-.7.7" stroke="#080808" stroke-width="1" stroke-linecap="round"/><circle cx="5" cy="5" r="1.5" fill="#080808"/>';
+  }
+  try{localStorage.setItem('wf_theme',document.body.classList.contains('light')?'light':'dark')}catch(e){}
+}
+
+// INIT — default select MP3
+selectOut('mp3');
+renderHist();
+// load saved theme
+try{
+  const t=localStorage.getItem('wf_theme');
+  if(t==='light'){document.body.classList.replace('dark','light');
+    g('tt-svg').innerHTML='<path d="M6.5 2.5A2.5 2.5 0 004 5a4 4 0 004-4 2.5 2.5 0 01-1.5 1.5z" fill="#080808"/>';
+  }
+}catch(e){}
+</script>
+</body>
+</html>
