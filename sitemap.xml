@@ -44,4 +44,19 @@
     <priority>0.8</priority>
   </url>
 
+
+  <url>
+    <loc>https://flipwav.com/blog/best-bitrate-for-mp3.html</loc>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://flipwav.com/blog/how-to-convert-flac-to-mp3.html</loc>
+    <lastmod>2026-05-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
 </urlset>
