@@ -4,37 +4,110 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Blog — Audio Tips, Guides & Tutorials | FlipWAV</title>
-<meta name="description" content="Audio conversion guides, format comparisons, and tips for musicians, podcasters, and developers. Learn about WAV, MP3, FLAC and more.">
+<meta name="description" content="Audio conversion guides, format comparisons, and tips for musicians, podcasters, and developers.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://flipwav.com/blog/">
 <link rel="icon" type="image/x-icon" href="../favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#080808;--panel:#111;--bd:#272727;--ac:#f5c842;--tx:#e8e8e8;--tx2:#aaa;--tx3:#555;--gr:#3ecf8e}
-body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif}
-nav{background:#0d0d0d;border-bottom:1px solid var(--bd);height:52px;display:flex;align-items:center;justify-content:center;position:sticky;top:0;z-index:100}
-.nav-inner{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:860px;padding:0 24px}
-.nlogo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;color:var(--ac);text-decoration:none}
-.nlogo em{color:#444;font-style:normal}
-.nav-links{display:flex;gap:20px}
-.nav-links a{font-size:12px;font-family:'Share Tech Mono',monospace;color:var(--tx3);text-decoration:none;letter-spacing:1px;text-transform:uppercase;transition:color .15s}
-.nav-links a:hover{color:var(--ac)}
-.wrap{max-width:860px;margin:0 auto;padding:56px 24px 80px}
-.page-title{font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:4px;color:var(--ac);margin-bottom:8px}
-.page-sub{font-size:14px;color:var(--tx3);font-family:'Share Tech Mono',monospace;letter-spacing:1px;margin-bottom:48px}
-.posts-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.post-card{background:var(--panel);border:1px solid var(--bd);border-radius:4px;padding:28px;text-decoration:none;display:block;transition:border-color .2s,background .2s}
-.post-card:hover{border-color:rgba(245,200,66,.4);background:#141414}
-.post-tag{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:2px;border:1px solid #1a3328;color:var(--gr);background:rgba(62,207,142,.05);display:inline-block;margin-bottom:14px}
-.post-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1.5px;color:var(--tx);line-height:1.15;margin-bottom:10px}
-.post-card:hover .post-title{color:var(--ac)}
-.post-desc{font-size:13px;color:var(--tx3);line-height:1.7;margin-bottom:16px}
-.post-meta{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--tx3);display:flex;gap:12px}
-footer{border-top:1px solid var(--bd);padding:24px;text-align:center;font-size:11px;color:var(--tx3);font-family:'Share Tech Mono',monospace;letter-spacing:1px;margin-top:48px}
-footer a{color:var(--tx3);text-decoration:none}
-footer a:hover{color:var(--ac)}
-@media(max-width:600px){.posts-grid{grid-template-columns:1fr}}
+:root{--bg:#ffffff;--panel:#f7f6f3;--bd:#e4e2dc;--bd2:#ccc9c0;--ac:#d4880a;--ac2:#fff3d6;--tx:#111111;--tx2:#444444;--tx3:#888888;--gr:#1a7a4a;}
+body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+nav{background:#fff;border-bottom:1px solid var(--bd);height:52px;display:flex;align-items:center;justify-content:center;position:sticky;top:0;z-index:100;}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:960px;padding:0 24px;}
+.nlogo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;color:var(--tx);text-decoration:none;}
+.nlogo em{color:var(--ac);font-style:normal;}
+.nav-links{display:flex;gap:24px;}
+.nav-links a{font-size:12px;font-family:'Share Tech Mono',monospace;color:var(--tx3);text-decoration:none;letter-spacing:1px;text-transform:uppercase;transition:color .15s;}
+.nav-links a:hover{color:var(--tx);}
+
+/* HERO */
+.hero{max-width:960px;margin:0 auto;padding:72px 24px 56px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;}
+.hero-left{opacity:0;transform:translateY(24px);animation:fadeUp .6s ease .1s forwards;}
+.hero-eyebrow{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--ac);margin-bottom:14px;}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(44px,6vw,72px);letter-spacing:3px;color:var(--tx);line-height:1;margin-bottom:16px;}
+.hero-title span{color:var(--ac);}
+.hero-desc{font-size:15px;color:var(--tx3);line-height:1.7;}
+.hero-stats{display:flex;gap:28px;margin-top:28px;}
+.stat{display:flex;flex-direction:column;gap:2px;}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--tx);}
+.stat-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx3);}
+
+/* WAVE VIZ */
+.hero-right{opacity:0;transform:translateY(24px);animation:fadeUp .6s ease .25s forwards;}
+.wave-viz{background:var(--tx);border-radius:12px;padding:32px 28px;display:flex;flex-direction:column;gap:16px;}
+.wave-label{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:4px;}
+.wave-bars{display:flex;align-items:center;gap:3px;height:60px;}
+.wb{width:4px;border-radius:2px;background:var(--ac);animation:wavePulse 1.4s ease-in-out infinite;}
+.wave-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+.wtag{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;padding:3px 10px;border-radius:2px;border:1px solid #333;color:#555;}
+.wtag.on{border-color:var(--ac);color:var(--ac);}
+
+/* SECTION */
+.posts-section{max-width:960px;margin:0 auto;padding:0 24px 80px;}
+.section-head{display:flex;align-items:center;gap:16px;margin-bottom:28px;opacity:0;animation:fadeUp .5s ease .4s forwards;}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;color:var(--tx3);}
+.section-line{flex:1;height:1px;background:var(--bd);}
+.posts-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+
+/* CARDS */
+.post-card{background:#fff;border:1px solid var(--bd);border-radius:8px;text-decoration:none;display:block;overflow:hidden;opacity:0;transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;}
+.post-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(0,0,0,.09);border-color:var(--bd2);}
+.post-card.a1{animation:fadeUp .5s ease .5s forwards;}
+.post-card.a2{animation:fadeUp .5s ease .62s forwards;}
+.post-card.a3{animation:fadeUp .5s ease .74s forwards;}
+.post-card.a4{animation:fadeUp .5s ease .86s forwards;}
+
+/* CARD THUMBNAIL */
+.card-thumb{height:130px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.card-thumb.c1{background:linear-gradient(135deg,#141412,#252520);}
+.card-thumb.c2{background:linear-gradient(135deg,#0a1a10,#162a1a);}
+.card-thumb.c3{background:linear-gradient(135deg,#1a1000,#2e1e00);}
+.thumb-inner{text-align:center;z-index:1;}
+.thumb-big{font-family:'Bebas Neue',sans-serif;font-size:44px;letter-spacing:3px;line-height:1;}
+.c1 .thumb-big{color:var(--ac);}
+.c2 .thumb-big{color:#3ecf8e;}
+.c3 .thumb-big{color:#f5c842;}
+.thumb-sub{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#444;margin-top:5px;}
+
+/* mini waveform decoration */
+.mini-wave{display:flex;align-items:center;gap:2px;height:24px;position:absolute;bottom:10px;right:12px;opacity:.3;}
+.mw{width:3px;border-radius:1px;}
+.c1 .mw{background:var(--ac);}
+.c2 .mw{background:#3ecf8e;}
+.c3 .mw{background:#f5c842;}
+
+/* CARD BODY */
+.card-body{padding:20px 20px 20px;}
+.card-tag{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 8px;border-radius:2px;border:1px solid var(--bd);color:var(--tx3);background:var(--panel);display:inline-block;margin-bottom:10px;}
+.card-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1.5px;color:var(--tx);line-height:1.15;margin-bottom:8px;transition:color .15s;}
+.post-card:hover .card-title{color:var(--ac);}
+.card-desc{font-size:13px;color:var(--tx3);line-height:1.65;margin-bottom:14px;}
+.card-footer{display:flex;align-items:center;justify-content:space-between;}
+.card-meta{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--tx3);display:flex;gap:10px;}
+.card-arrow{width:28px;height:28px;border-radius:50%;border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--tx3);transition:all .15s;flex-shrink:0;}
+.post-card:hover .card-arrow{background:var(--ac);border-color:var(--ac);color:#fff;}
+
+/* CTA STRIP */
+.cta-strip{background:var(--tx);max-width:912px;margin:0 auto 80px;border-radius:8px;padding:32px 36px;display:flex;align-items:center;justify-content:space-between;gap:24px;opacity:0;animation:fadeUp .5s ease .85s forwards;}
+.cta-strip h3{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;color:#fff;margin-bottom:4px;}
+.cta-strip p{font-size:13px;color:#666;}
+.cta-btn{display:inline-flex;align-items:center;gap:8px;background:var(--ac);color:#111;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;padding:12px 24px;border-radius:4px;text-decoration:none;transition:background .15s;white-space:nowrap;flex-shrink:0;}
+.cta-btn:hover{background:#c07800;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes wavePulse{0%,100%{transform:scaleY(.25)}50%{transform:scaleY(1)}}
+
+footer{border-top:1px solid var(--bd);padding:24px;text-align:center;font-size:11px;color:var(--tx3);font-family:'Share Tech Mono',monospace;letter-spacing:1px;}
+footer a{color:var(--tx3);text-decoration:none;}
+footer a:hover{color:var(--ac);}
+
+@media(max-width:760px){
+  .hero{grid-template-columns:1fr;gap:32px;padding:48px 20px 40px;}
+  .hero-right{display:none;}
+  .posts-grid{grid-template-columns:1fr;}
+  .cta-strip{flex-direction:column;align-items:flex-start;margin:0 20px 60px;padding:24px 22px;}
+}
 </style>
 </head>
 <body>
@@ -50,32 +123,149 @@ footer a:hover{color:var(--ac)}
   </div>
 </nav>
 
-<div class="wrap">
-  <h1 class="page-title">Blog</h1>
-  <p class="page-sub">Audio guides · Format comparisons · Tips for musicians & podcasters</p>
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">FlipWAV Blog</div>
+    <h1 class="hero-title">Audio<br><span>Guides</span><br>&amp; Tips</h1>
+    <p class="hero-desc">Simple, practical guides on audio formats, conversion, and workflow — for musicians, podcasters, and everyone in between.</p>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">4</span><span class="stat-lbl">Articles</span></div>
+      <div class="stat"><span class="stat-num">5min</span><span class="stat-lbl">Avg Read</span></div>
+      <div class="stat"><span class="stat-num">Free</span><span class="stat-lbl">Always</span></div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="wave-viz">
+      <div class="wave-label">Formats Covered</div>
+      <div class="wave-bars" id="waveBars"></div>
+      <div class="wave-tags">
+        <span class="wtag on">WAV</span>
+        <span class="wtag on">MP3</span>
+        <span class="wtag on">Bitrate</span>
+        <span class="wtag">FLAC</span>
+        <span class="wtag">AAC</span>
+        <span class="wtag">OGG</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="posts-section">
+  <div class="section-head">
+    <span class="section-title">Latest Articles</span>
+    <div class="section-line"></div>
+  </div>
 
   <div class="posts-grid">
 
-    <a href="/blog/wav-vs-mp3.html" class="post-card">
-      <span class="post-tag">Beginners Guide</span>
-      <h2 class="post-title">WAV vs MP3 — What's the Difference?</h2>
-      <p class="post-desc">Lossless vs lossy explained simply. Learn when to use WAV and when MP3 is perfectly fine — and why it matters for your workflow.</p>
-      <div class="post-meta"><span>April 2026</span><span>5 min read</span></div>
+    <a href="/blog/wav-vs-mp3.html" class="post-card a1">
+      <div class="card-thumb c1">
+        <div class="thumb-inner">
+          <div class="thumb-big">WAV<br>vs MP3</div>
+          <div class="thumb-sub">Format Guide</div>
+        </div>
+        <div class="mini-wave">
+          <div class="mw" style="height:7px"></div><div class="mw" style="height:16px"></div><div class="mw" style="height:22px"></div><div class="mw" style="height:13px"></div><div class="mw" style="height:19px"></div><div class="mw" style="height:9px"></div><div class="mw" style="height:15px"></div>
+        </div>
+      </div>
+      <div class="card-body">
+        <span class="card-tag">Beginners Guide</span>
+        <h2 class="card-title">WAV vs MP3 — What's the Difference?</h2>
+        <p class="card-desc">Lossless vs lossy explained simply. Learn when to use WAV and when MP3 is perfectly fine for your workflow.</p>
+        <div class="card-footer">
+          <div class="card-meta"><span>April 2026</span><span>5 min read</span></div>
+          <div class="card-arrow">→</div>
+        </div>
+      </div>
     </a>
 
-    <a href="/blog/best-audio-format-for-podcasting.html" class="post-card">
-      <span class="post-tag">Podcasting</span>
-      <h2 class="post-title">Best Audio Format for Podcasting in 2026</h2>
-      <p class="post-desc">MP3, WAV, or AAC? We compare all formats for every major podcast platform and tell you the exact settings to use.</p>
-      <div class="post-meta"><span>April 2026</span><span>6 min read</span></div>
+    <a href="/blog/best-audio-format-for-podcasting.html" class="post-card a2">
+      <div class="card-thumb c2">
+        <div class="thumb-inner">
+          <div class="thumb-big" style="font-size:36px">PODCAST<br>FORMAT</div>
+          <div class="thumb-sub">Audio Setup</div>
+        </div>
+        <div class="mini-wave">
+          <div class="mw" style="height:9px"></div><div class="mw" style="height:19px"></div><div class="mw" style="height:14px"></div><div class="mw" style="height:22px"></div><div class="mw" style="height:11px"></div><div class="mw" style="height:17px"></div><div class="mw" style="height:7px"></div>
+        </div>
+      </div>
+      <div class="card-body">
+        <span class="card-tag">Podcasting</span>
+        <h2 class="card-title">Best Audio Format for Podcasting in 2026</h2>
+        <p class="card-desc">MP3, WAV or AAC? We compare all formats for every major podcast platform with exact settings to use.</p>
+        <div class="card-footer">
+          <div class="card-meta"><span>April 2026</span><span>6 min read</span></div>
+          <div class="card-arrow">→</div>
+        </div>
+      </div>
+    </a>
+
+    <a href="/blog/best-bitrate-for-mp3.html" class="post-card a3">
+      <div class="card-thumb c3">
+        <div class="thumb-inner">
+          <div class="thumb-big">128<br>vs 320</div>
+          <div class="thumb-sub">Bitrate Guide</div>
+        </div>
+        <div class="mini-wave">
+          <div class="mw" style="height:12px"></div><div class="mw" style="height:20px"></div><div class="mw" style="height:9px"></div><div class="mw" style="height:22px"></div><div class="mw" style="height:15px"></div><div class="mw" style="height:18px"></div><div class="mw" style="height:10px"></div>
+        </div>
+      </div>
+      <div class="card-body">
+        <span class="card-tag">MP3 Guide</span>
+        <h2 class="card-title">Best Bitrate for MP3 — 128, 192 or 320 kbps?</h2>
+        <p class="card-desc">Which MP3 bitrate should you use? We compare every option for music, podcasts, and streaming.</p>
+        <div class="card-footer">
+          <div class="card-meta"><span>April 2026</span><span>5 min read</span></div>
+          <div class="card-arrow">→</div>
+        </div>
+      </div>
+    </a>
+
+    <a href="/blog/how-to-convert-flac-to-mp3.html" class="post-card a4">
+      <div class="card-thumb" style="background:linear-gradient(135deg,#0a0a1a,#141428);">
+        <div class="thumb-inner">
+          <div class="thumb-big" style="color:#a78bfa;font-size:38px;">FLAC<br>&#8594; MP3</div>
+          <div class="thumb-sub">Conversion Guide</div>
+        </div>
+        <div class="mini-wave">
+          <div class="mw" style="height:11px;background:#a78bfa"></div><div class="mw" style="height:21px;background:#a78bfa"></div><div class="mw" style="height:8px;background:#a78bfa"></div><div class="mw" style="height:18px;background:#a78bfa"></div><div class="mw" style="height:14px;background:#a78bfa"></div><div class="mw" style="height:20px;background:#a78bfa"></div><div class="mw" style="height:9px;background:#a78bfa"></div>
+        </div>
+      </div>
+      <div class="card-body">
+        <span class="card-tag" style="border-color:#c4b5fd;color:#7c6aaa;">Coming Soon</span>
+        <h2 class="card-title">How to Convert FLAC to MP3 Without Losing Quality</h2>
+        <p class="card-desc">FLAC files too large to share? Learn the best way to convert to MP3 while keeping the best possible audio quality.</p>
+        <div class="card-footer">
+          <div class="card-meta"><span>May 2026</span><span>4 min read</span></div>
+          <div class="card-arrow" style="opacity:.4">→</div>
+        </div>
+      </div>
     </a>
 
   </div>
 </div>
 
+<div class="cta-strip">
+  <div>
+    <h3>Need to Convert Audio?</h3>
+    <p>Free browser-based converter — no upload, no signup, no limits.</p>
+  </div>
+  <a href="/" class="cta-btn">Open FlipWAV →</a>
+</div>
+
 <footer>
-  © 2026 FlipWAV · <a href="/">flipwav.com</a> · <a href="/privacy.html">Privacy</a> · <a href="/about.html">About</a>
+  © 2026 FlipWAV &nbsp;·&nbsp; <a href="/">flipwav.com</a> &nbsp;·&nbsp; <a href="/privacy.html">Privacy</a> &nbsp;·&nbsp; <a href="/about.html">About</a>
 </footer>
 
+<script>
+const bars = document.getElementById('waveBars');
+const h=[20,35,55,45,60,40,52,30,48,38,58,42,35,50,28,44,56,36,48,32,54,40,46,34,52];
+h.forEach((v,i)=>{
+  const b=document.createElement('div');
+  b.className='wb';
+  b.style.cssText=`height:${v}px;animation-delay:${(i*.07).toFixed(2)}s`;
+  bars.appendChild(b);
+});
+</script>
 </body>
 </html>
