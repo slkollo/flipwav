@@ -291,10 +291,13 @@ footer a:hover{color:var(--ac);}
       </tbody>
     </table>
 
-    <div class="screenshot-placeholder">
-      <strong>📸 ADD SPECTROGRAM SCREENSHOT</strong>
-      Audacity spectrogram comparing MP3 128kbps vs AAC 128kbps — show the cutoff difference at high frequencies
-    </div>
+    <img src="/images/mp3-vs-aac-spectrogram.png" 
+     alt="Spectrogram comparison showing MP3 128kbps cuts off frequencies above 16kHz while AAC 128kbps preserves them up to 19kHz" 
+     style="width:100%;border-radius:6px;margin:24px 0;border:1px solid #e4e2dc;display:block;">
+
+<p style="text-align:center;font-size:13px;color:#888;margin:-12px 0 24px;font-style:italic;">
+  Spectrogram comparison: MP3 cuts off ~16kHz, AAC preserves up to ~19kHz
+</p>
 
     <p>The most interesting finding: <strong>at 128kbps, AAC was fine for casual listening, but MP3 had clear problems</strong>. This matters because lots of older audio files online (and lots of streaming services in low-bandwidth mode) use exactly 128kbps. If you have control over the format, AAC saves your ears.</p>
 
