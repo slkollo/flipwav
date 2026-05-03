@@ -27,7 +27,8 @@
     "url": "https://flipwav.com"
   },
   "datePublished": "2026-05-03",
-  "dateModified": "2026-05-03"
+  "dateModified": "2026-05-03",
+  "image": "https://flipwav.com/images/mp3-vs-aac-spectrogram.png"
 }
 </script>
 
@@ -98,9 +99,8 @@ h1.article-title span{color:var(--ac);}
 .test-stat-num{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:var(--ac);line-height:1;margin-bottom:4px;}
 .test-stat-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--tx3);}
 
-/* SCREENSHOT PLACEHOLDER - replace these with real images */
-.screenshot-placeholder{background:linear-gradient(135deg,#141412,#252520);border-radius:6px;padding:40px 20px;margin:24px 0;text-align:center;color:#666;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;border:1px dashed #333;}
-.screenshot-placeholder strong{display:block;color:var(--ac);font-size:13px;margin-bottom:6px;letter-spacing:2px;}
+/* IMAGE CAPTION */
+.img-caption{text-align:center;font-size:13px;color:var(--tx3);margin:-12px 0 28px;font-style:italic;}
 
 /* PULL QUOTE */
 .pullquote{border-left:3px solid var(--tx);padding:8px 0 8px 22px;margin:28px 0;font-family:'DM Sans',sans-serif;font-size:18px;font-style:italic;color:var(--tx);line-height:1.5;}
@@ -215,10 +215,7 @@ footer a:hover{color:var(--ac);}
 
     <p>I took an uncompressed WAV file (a 3 minute 42 second instrumental with vocals, drums, bass, and acoustic guitar) and converted it to both AAC and MP3 at four different bitrates each. Then I listened on three different setups: cheap earbuds, decent over-ear headphones (Sony WH-1000XM4), and laptop speakers.</p>
 
-    <div class="screenshot-placeholder">
-      <strong>📸 ADD SCREENSHOT HERE</strong>
-      File properties window showing original WAV file (38.4MB, 1411kbps, 44.1kHz)
-    </div>
+    <p>The original WAV file came in at <strong>38.4 MB</strong>, encoded at 1411 kbps with a 44.1 kHz sample rate — standard CD quality. That gave me a clean lossless reference to compare every encoded version against.</p>
 
     <div class="test-card">
       <div class="test-card-head">
@@ -291,13 +288,13 @@ footer a:hover{color:var(--ac);}
       </tbody>
     </table>
 
-    <img src="/images/mp3-vs-aac-spectrogram.png" 
-     alt="Spectrogram comparison showing MP3 128kbps cuts off frequencies above 16kHz while AAC 128kbps preserves them up to 19kHz" 
-     style="width:100%;border-radius:6px;margin:24px 0;border:1px solid #e4e2dc;display:block;">
+    <p>The numbers in the table tell one story, but a spectrogram tells it more clearly. Below is a side-by-side frequency analysis of the same audio encoded at MP3 128kbps and AAC 128kbps. Notice how MP3 hits a hard wall around 16 kHz — everything above gets discarded. AAC keeps going up to about 19 kHz with a softer rolloff, which is exactly why those cymbals and high vocals stay cleaner.</p>
 
-<p style="text-align:center;font-size:13px;color:#888;margin:-12px 0 24px;font-style:italic;">
-  Spectrogram comparison: MP3 cuts off ~16kHz, AAC preserves up to ~19kHz
-</p>
+    <img src="/images/mp3-vs-aac-spectrogram.png" 
+         alt="Spectrogram comparison showing MP3 128kbps cuts off frequencies above 16kHz while AAC 128kbps preserves them up to 19kHz" 
+         style="width:100%;border-radius:6px;margin:24px 0;border:1px solid #e4e2dc;display:block;">
+
+    <p class="img-caption">Spectrogram comparison: MP3 cuts off ~16kHz, AAC preserves up to ~19kHz</p>
 
     <p>The most interesting finding: <strong>at 128kbps, AAC was fine for casual listening, but MP3 had clear problems</strong>. This matters because lots of older audio files online (and lots of streaming services in low-bandwidth mode) use exactly 128kbps. If you have control over the format, AAC saves your ears.</p>
 
