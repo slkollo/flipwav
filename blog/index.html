@@ -57,17 +57,22 @@ nav{background:#fff;border-bottom:1px solid var(--bd);height:52px;display:flex;a
 .post-card.a2{animation:fadeUp .5s ease .62s forwards;}
 .post-card.a3{animation:fadeUp .5s ease .74s forwards;}
 .post-card.a4{animation:fadeUp .5s ease .86s forwards;}
+.post-card.a5{animation:fadeUp .5s ease .98s forwards;}
 
 /* CARD THUMBNAIL */
 .card-thumb{height:130px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
 .card-thumb.c1{background:linear-gradient(135deg,#141412,#252520);}
 .card-thumb.c2{background:linear-gradient(135deg,#0a1a10,#162a1a);}
 .card-thumb.c3{background:linear-gradient(135deg,#1a1000,#2e1e00);}
+.card-thumb.c4{background:linear-gradient(135deg,#0a0a1a,#141428);}
+.card-thumb.c5{background:linear-gradient(135deg,#1a0a14,#2a1424);}
 .thumb-inner{text-align:center;z-index:1;}
 .thumb-big{font-family:'Bebas Neue',sans-serif;font-size:44px;letter-spacing:3px;line-height:1;}
 .c1 .thumb-big{color:var(--ac);}
 .c2 .thumb-big{color:#3ecf8e;}
 .c3 .thumb-big{color:#f5c842;}
+.c4 .thumb-big{color:#a78bfa;}
+.c5 .thumb-big{color:#f472b6;}
 .thumb-sub{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#444;margin-top:5px;}
 
 /* mini waveform decoration */
@@ -76,10 +81,13 @@ nav{background:#fff;border-bottom:1px solid var(--bd);height:52px;display:flex;a
 .c1 .mw{background:var(--ac);}
 .c2 .mw{background:#3ecf8e;}
 .c3 .mw{background:#f5c842;}
+.c4 .mw{background:#a78bfa;}
+.c5 .mw{background:#f472b6;}
 
 /* CARD BODY */
 .card-body{padding:20px 20px 20px;}
 .card-tag{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 8px;border-radius:2px;border:1px solid var(--bd);color:var(--tx3);background:var(--panel);display:inline-block;margin-bottom:10px;}
+.card-tag.new{border-color:var(--ac);color:var(--ac);background:var(--ac2);}
 .card-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1.5px;color:var(--tx);line-height:1.15;margin-bottom:8px;transition:color .15s;}
 .post-card:hover .card-title{color:var(--ac);}
 .card-desc{font-size:13px;color:var(--tx3);line-height:1.65;margin-bottom:14px;}
@@ -129,7 +137,7 @@ footer a:hover{color:var(--ac);}
     <h1 class="hero-title">Audio<br><span>Guides</span><br>&amp; Tips</h1>
     <p class="hero-desc">Simple, practical guides on audio formats, conversion, and workflow — for musicians, podcasters, and everyone in between.</p>
     <div class="hero-stats">
-      <div class="stat"><span class="stat-num">4</span><span class="stat-lbl">Articles</span></div>
+      <div class="stat"><span class="stat-num">5</span><span class="stat-lbl">Articles</span></div>
       <div class="stat"><span class="stat-num">5min</span><span class="stat-lbl">Avg Read</span></div>
       <div class="stat"><span class="stat-num">Free</span><span class="stat-lbl">Always</span></div>
     </div>
@@ -141,9 +149,9 @@ footer a:hover{color:var(--ac);}
       <div class="wave-tags">
         <span class="wtag on">WAV</span>
         <span class="wtag on">MP3</span>
+        <span class="wtag on">AAC</span>
+        <span class="wtag on">FLAC</span>
         <span class="wtag on">Bitrate</span>
-        <span class="wtag">FLAC</span>
-        <span class="wtag">AAC</span>
         <span class="wtag">OGG</span>
       </div>
     </div>
@@ -158,7 +166,49 @@ footer a:hover{color:var(--ac);}
 
   <div class="posts-grid">
 
-    <a href="/blog/wav-vs-mp3.html" class="post-card a1">
+    <a href="/blog/aac-vs-mp3.html" class="post-card a1">
+      <div class="card-thumb c5">
+        <div class="thumb-inner">
+          <div class="thumb-big">AAC<br>vs MP3</div>
+          <div class="thumb-sub">Format Comparison</div>
+        </div>
+        <div class="mini-wave">
+          <div class="mw" style="height:10px"></div><div class="mw" style="height:18px"></div><div class="mw" style="height:14px"></div><div class="mw" style="height:21px"></div><div class="mw" style="height:8px"></div><div class="mw" style="height:16px"></div><div class="mw" style="height:12px"></div>
+        </div>
+      </div>
+      <div class="card-body">
+        <span class="card-tag new">New · May 2026</span>
+        <h2 class="card-title">AAC vs MP3 — Which Actually Sounds Better?</h2>
+        <p class="card-desc">I tested AAC and MP3 at the same bitrates with real audio. Here's which one wins, file size differences, and when to use each.</p>
+        <div class="card-footer">
+          <div class="card-meta"><span>May 2026</span><span>7 min read</span></div>
+          <div class="card-arrow">→</div>
+        </div>
+      </div>
+    </a>
+
+    <a href="/blog/how-to-convert-flac-to-mp3.html" class="post-card a2">
+      <div class="card-thumb c4">
+        <div class="thumb-inner">
+          <div class="thumb-big" style="font-size:38px;">FLAC<br>&#8594; MP3</div>
+          <div class="thumb-sub">Conversion Guide</div>
+        </div>
+        <div class="mini-wave">
+          <div class="mw" style="height:11px"></div><div class="mw" style="height:21px"></div><div class="mw" style="height:8px"></div><div class="mw" style="height:18px"></div><div class="mw" style="height:14px"></div><div class="mw" style="height:20px"></div><div class="mw" style="height:9px"></div>
+        </div>
+      </div>
+      <div class="card-body">
+        <span class="card-tag">Conversion Guide</span>
+        <h2 class="card-title">How to Convert FLAC to MP3 Without Losing Quality</h2>
+        <p class="card-desc">FLAC files too large to share? Learn the best way to convert to MP3 while keeping the best possible audio quality.</p>
+        <div class="card-footer">
+          <div class="card-meta"><span>May 2026</span><span>4 min read</span></div>
+          <div class="card-arrow">→</div>
+        </div>
+      </div>
+    </a>
+
+    <a href="/blog/wav-vs-mp3.html" class="post-card a3">
       <div class="card-thumb c1">
         <div class="thumb-inner">
           <div class="thumb-big">WAV<br>vs MP3</div>
@@ -179,7 +229,7 @@ footer a:hover{color:var(--ac);}
       </div>
     </a>
 
-    <a href="/blog/best-audio-format-for-podcasting.html" class="post-card a2">
+    <a href="/blog/best-audio-format-for-podcasting.html" class="post-card a4">
       <div class="card-thumb c2">
         <div class="thumb-inner">
           <div class="thumb-big" style="font-size:36px">PODCAST<br>FORMAT</div>
@@ -200,7 +250,7 @@ footer a:hover{color:var(--ac);}
       </div>
     </a>
 
-    <a href="/blog/best-bitrate-for-mp3.html" class="post-card a3">
+    <a href="/blog/best-bitrate-for-mp3.html" class="post-card a5">
       <div class="card-thumb c3">
         <div class="thumb-inner">
           <div class="thumb-big">128<br>vs 320</div>
@@ -217,27 +267,6 @@ footer a:hover{color:var(--ac);}
         <div class="card-footer">
           <div class="card-meta"><span>April 2026</span><span>5 min read</span></div>
           <div class="card-arrow">→</div>
-        </div>
-      </div>
-    </a>
-
-    <a href="/blog/how-to-convert-flac-to-mp3.html" class="post-card a4">
-      <div class="card-thumb" style="background:linear-gradient(135deg,#0a0a1a,#141428);">
-        <div class="thumb-inner">
-          <div class="thumb-big" style="color:#a78bfa;font-size:38px;">FLAC<br>&#8594; MP3</div>
-          <div class="thumb-sub">Conversion Guide</div>
-        </div>
-        <div class="mini-wave">
-          <div class="mw" style="height:11px;background:#a78bfa"></div><div class="mw" style="height:21px;background:#a78bfa"></div><div class="mw" style="height:8px;background:#a78bfa"></div><div class="mw" style="height:18px;background:#a78bfa"></div><div class="mw" style="height:14px;background:#a78bfa"></div><div class="mw" style="height:20px;background:#a78bfa"></div><div class="mw" style="height:9px;background:#a78bfa"></div>
-        </div>
-      </div>
-      <div class="card-body">
-        <span class="card-tag" style="border-color:#c4b5fd;color:#7c6aaa;">Coming Soon</span>
-        <h2 class="card-title">How to Convert FLAC to MP3 Without Losing Quality</h2>
-        <p class="card-desc">FLAC files too large to share? Learn the best way to convert to MP3 while keeping the best possible audio quality.</p>
-        <div class="card-footer">
-          <div class="card-meta"><span>May 2026</span><span>4 min read</span></div>
-          <div class="card-arrow" style="opacity:.4">→</div>
         </div>
       </div>
     </a>
