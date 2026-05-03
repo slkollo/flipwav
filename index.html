@@ -84,6 +84,7 @@
   --gr:#3ecf8e;--grdim:rgba(62,207,142,.08);
   --pu:#a78bfa;--pudim:rgba(167,139,250,.08);
   --or:#fb923c;--ordim:rgba(251,146,60,.08);
+  --pk:#e879f9;--pkdim:rgba(232,121,249,.08);
   --tx:#f0f0f0;--tx2:#aaa;--tx3:#666;
   --err:#e74c3c;
 }
@@ -134,7 +135,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .hbadges{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
 .hb{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;padding:4px 10px;border:1px solid #1a3328;color:var(--gr);background:rgba(62,207,142,.04);border-radius:2px;text-transform:uppercase}
 
-/* ─── FORMAT INPUT SELECTOR ─── */
+/* FORMAT INPUT SELECTOR */
 .section-label{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;margin-bottom:10px}
 
 .format-input-row{display:flex;align-items:center;gap:8px;margin-bottom:18px;flex-wrap:wrap}
@@ -143,12 +144,12 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .fmt-pill.active{border-color:var(--ac);color:var(--ac);background:var(--adim)}
 .fmt-dot{width:7px;height:7px;border-radius:50%}
 
-/* ─── ARROW ─── */
+/* ARROW */
 .arrow-row{display:flex;align-items:center;gap:12px;margin-bottom:16px}
 .arrow-line{flex:1;height:1px;background:var(--bd2)}
 .arrow-icon{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--tx3);letter-spacing:2px;white-space:nowrap}
 
-/* ─── OUTPUT FORMAT GRID ─── */
+/* OUTPUT FORMAT GRID */
 .out-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:20px}
 .out-card{background:var(--p2);border:1px solid var(--bd);border-radius:4px;padding:14px 13px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
 .out-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .15s;pointer-events:none}
@@ -164,6 +165,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .out-card.sel-flac::before{background:radial-gradient(ellipse at top left,rgba(167,139,250,.06) 0%,transparent 70%);opacity:1}
 .out-card.sel-webm{border-color:var(--or);background:var(--ordim)}
 .out-card.sel-webm::before{background:radial-gradient(ellipse at top left,rgba(251,146,60,.06) 0%,transparent 70%);opacity:1}
+.out-card.sel-m4a{border-color:var(--or);background:var(--ordim)}
+.out-card.sel-m4a::before{background:radial-gradient(ellipse at top left,rgba(251,146,60,.06) 0%,transparent 70%);opacity:1}
 .out-card.disabled{opacity:.35;cursor:not-allowed}
 .oc-ext{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;margin-bottom:4px}
 .oc-name{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--tx2);letter-spacing:1px;margin-bottom:6px}
@@ -183,8 +186,9 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .sel-ogg .check-icon{background:var(--gr)}
 .sel-flac .check-icon{background:var(--pu)}
 .sel-webm .check-icon{background:var(--or)}
+.sel-m4a .check-icon{background:var(--or)}
 
-/* ─── QUALITY SETTINGS ─── */
+/* QUALITY SETTINGS */
 .qbox{background:var(--p2);border:1px solid var(--bd2);border-radius:4px;padding:14px 16px;margin-bottom:16px;display:none}
 .qbox.vis{display:block}
 .qbox-title{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;margin-bottom:10px}
@@ -200,7 +204,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .qbtn.on-or{border-color:var(--or);color:var(--or);background:var(--ordim)}
 .qnote{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--tx3);letter-spacing:.5px;margin-top:8px;line-height:1.6}
 
-/* ─── DROP ZONE ─── */
+/* DROP ZONE */
 .dz{border:2px dashed var(--bd2);border-radius:5px;padding:44px 32px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;background:var(--panel)}
 .dz::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(245,200,66,.025) 0%,transparent 50%);pointer-events:none}
 .dz.ov{border-color:var(--ac);background:rgba(245,200,66,.03)}
@@ -223,20 +227,22 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 
 /* FILE LIST */
 .fl{display:flex;flex-direction:column;gap:3px;margin:4px 0 14px}
-.fc{background:var(--panel);border:1px solid var(--bd);border-radius:3px;height:auto!important;min-height:60px;flex-direction:column;padding:10px 13px!important;gap:6px!important;align-items:stretch!important}
-.fc.fd{border-color:rgba(62,207,142,.28)}.fc.fe{border-color:rgba(231,76,60,.28)}.fc.fv{border-color:rgba(245,200,66,.22)}
-.fc-row1{display:flex;align-items:center;gap:11px;width:100%;min-width:0}
-.fc-row2{display:flex;align-items:center;gap:9px;width:100%;padding-left:43px}
+.fc{background:var(--panel);border:1px solid var(--bd);border-radius:3px;min-height:64px;display:flex;flex-direction:column;padding:10px 12px;gap:6px;align-items:stretch;position:relative;overflow:hidden}
+.fc.fd{border-color:rgba(62,207,142,.28)}
+.fc.fe{border-color:rgba(231,76,60,.28)}
+.fc.fv{border-color:rgba(245,200,66,.22)}
+.fc-row1{display:flex;align-items:center;gap:10px;width:100%;min-width:0}
+.fc-row2{display:flex;align-items:center;gap:8px;width:100%;padding-left:42px}
 .fp{position:absolute;left:0;top:0;bottom:0;width:0%;background:rgba(245,200,66,.04);transition:width .3s;pointer-events:none}
-.fb{width:32px;height:32px;background:var(--p2);border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Bebas Neue',sans-serif;font-size:9px;letter-spacing:.5px;border:1px solid var(--bd);color:var(--ac)}
-.fm{flex:1;min-width:0}
+.fb{width:32px;height:32px;background:var(--p2);border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Bebas Neue',sans-serif;font-size:9px;letter-spacing:.5px;border:1px solid var(--bd);color:var(--ac);position:relative;z-index:1}
+.fm{flex:1;min-width:0;position:relative;z-index:1}
 .fn{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--tx);margin-bottom:2px}
 .fi{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--tx3);letter-spacing:.5px}
-.fst{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;flex-shrink:0;width:90px;text-align:right}
+.fst{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;flex-shrink:0;width:90px;text-align:right;position:relative;z-index:1}
 .fsw{color:var(--tx3)}.fsc{color:var(--ac)}.fsd{color:var(--gr)}.fse{color:var(--err)}
 @keyframes fi2{0%{transform:rotateX(-90deg);opacity:0}100%{transform:rotateX(0);opacity:1}}
 .fst span{display:inline-block;transform-origin:top center;animation:fi2 .2s ease forwards}
-.fa{display:flex;gap:4px;flex-shrink:0}
+.fa{display:flex;gap:4px;flex-shrink:0;position:relative;z-index:1}
 .fdlb{background:rgba(62,207,142,.09);border:1px solid rgba(62,207,142,.22);color:var(--gr);width:28px;height:28px;border-radius:2px;cursor:pointer;display:none;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
 .fdlb.on{display:flex}.fdlb:hover{background:rgba(62,207,142,.2)}
 .frm{background:none;border:none;color:var(--tx3);cursor:pointer;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:2px;transition:all .15s;font-size:15px;flex-shrink:0}
@@ -263,10 +269,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .bclr{background:transparent;color:var(--tx3);border:1px solid var(--bd2);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;padding:13px 18px;border-radius:3px;cursor:pointer;transition:all .15s}
 .bclr:hover{color:var(--tx);border-color:var(--bd3)}
 
-/* PER-FILE CONTROLS */
-.fc{height:auto!important;min-height:64px;flex-direction:column;padding:10px 12px!important;gap:6px!important;align-items:stretch!important}
-.fc-row1{display:flex;align-items:center;gap:10px;width:100%;min-width:0}
-.fc-row2{display:flex;align-items:center;gap:8px;width:100%;padding-left:42px}
+/* PER-FILE PREVIEW + BITRATE */
 .fplay{background:none;border:1px solid var(--bd2);color:var(--tx2);width:24px;height:24px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;font-size:9px;line-height:1}
 .fplay:hover{border-color:var(--ac);color:var(--ac)}
 .fplay.playing{border-color:var(--gr);color:var(--gr);background:rgba(62,207,142,.1)}
@@ -332,7 +335,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .ov-skip:hover{border-color:var(--ac);color:var(--ac)}
 .ov-ad-big{background:#0d0d0d;border:1px dashed #1e1e1e;border-radius:3px;width:300px;height:250px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;margin-bottom:4px}
 
-/* COUNTDOWN OVERLAY */
+/* FFMPEG LOADER */
 .ffload{background:var(--p2);border:1px solid var(--bd2);border-radius:3px;padding:10px 14px;margin-bottom:14px;display:none;align-items:center;gap:12px}
 .ffload.on{display:flex}
 .ffload-bar-wrap{flex:1;height:3px;background:var(--bd);border-radius:2px;overflow:hidden}
@@ -359,7 +362,7 @@ body.light{
   --tx:#1a1a1a;--tx2:#666;--tx3:#aaa;
 }
 body.light::before{background:none}
-body.light .ad-bar{background:#ebebе7}
+body.light .ad-bar{background:#ebebe7}
 body.light .ad-bar.top{border-color:#ddddd8}
 body.light .ad-bar.bot{border-color:#ddddd8}
 body.light .adl{color:#bbb}
@@ -369,12 +372,12 @@ body.light .adsz{color:#ccc}
 body.light .sad-s{background:#e8e8e4;border-color:#d0d0ca}
 body.light .dz{background:#fafaf8}
 body.light .overlay{background:rgba(255,255,255,.94)}
-body.light .ov-ad-big,.body.light .ov-ad-slot{background:#f0f0ec;border-color:#d0d0ca}
+body.light .ov-ad-big,body.light .ov-ad-slot{background:#f0f0ec;border-color:#d0d0ca}
 body.light .ov-bar-wrap{background:#ddd}
 body.light .ov-count{text-shadow:0 0 30px rgba(245,200,66,.5)}
 body.light .toast{background:#fff;border-color:#ddd}
 
-/* THEME TOGGLE BUTTON */
+/* THEME TOGGLE */
 .theme-toggle{background:var(--p2);border:1px solid var(--bd2);border-radius:20px;width:52px;height:26px;cursor:pointer;position:relative;transition:all .3s;flex-shrink:0;display:flex;align-items:center;padding:0 3px}
 .tt-knob{width:20px;height:20px;border-radius:50%;background:var(--ac);transition:transform .3s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;justify-content:center;font-size:11px}
 body.dark .tt-knob{transform:translateX(0)}
@@ -385,9 +388,8 @@ body.light .tt-knob{transform:translateX(26px)}
 body.light .tt-icon-d{opacity:.25}
 body.light .tt-icon-l{opacity:.8}
 
-/* smooth theme transition */
 body{transition:background .3s,color .3s}
-.nav,.foot,.ad-bar,.sad,.dz,.fc,.qbox,.out-card,.dlb,.sb,.hist,.ffload,.fmt-pill,.np,.bc,.bclr{transition:background .3s,border-color .3s,color .3s}
+.nav,.foot,.ad-bar,.dz,.fc,.qbox,.out-card,.dlb,.sb,.hist,.ffload,.fmt-pill,.np,.bc,.bclr{transition:background .3s,border-color .3s,color .3s}
 
 /* RESPONSIVE */
 @media(max-width:1150px){
@@ -398,7 +400,7 @@ body{transition:background .3s,color .3s}
 @media(max-width:900px){
   .layout{grid-template-columns:1fr}
   .side-ad{display:none}
-  .main{padding:16px 14px 48px}
+  .main{padding:16px 14px 48px;border-right:none}
 }
 @media(max-width:600px){
   .nav{height:46px}
@@ -433,9 +435,8 @@ body{transition:background .3s,color .3s}
   .qbtn{font-size:8px;padding:4px 8px}
   .bc{font-size:14px;letter-spacing:2px;padding:11px 20px}
   .bclr{font-size:13px;padding:11px 14px}
-  .qs{width:100%;margin-left:0}
   .fc{padding:8px 10px}
-  .fc-row2{padding-left:0}
+  .fc-row2{padding-left:0;flex-wrap:wrap}
   .fbrsel{font-size:8px;padding:2px 4px}
   .sb.on{flex-wrap:wrap}
   .st{min-width:calc(50% - 1px);padding:7px 10px}
@@ -492,6 +493,7 @@ body{transition:background .3s,color .3s}
     <div class="sad-s sad-tall"><div class="adt" style="font-size:8px">ADVERTISEMENT</div><div class="adsz">160 × 600</div><div class="adsz" style="margin-top:3px">Skyscraper</div></div>
     <div class="sad-s sad-mid"><div class="adt" style="font-size:8px">ADVERTISEMENT</div><div class="adsz">160 × 250</div></div>
   </aside>
+
   <main class="main">
 
     <!-- HERO -->
@@ -530,7 +532,7 @@ body{transition:background .3s,color .3s}
         <div class="fmt-dot" style="background:var(--or)"></div>M4A / AAC
       </div>
       <div class="fmt-pill" data-ext="webm" onclick="setInFilter('webm')">
-        <div class="fmt-dot" style="background:#e879f9)"></div>WEBM
+        <div class="fmt-dot" style="background:var(--pk)"></div>WEBM
       </div>
     </div>
 
@@ -544,7 +546,6 @@ body{transition:background .3s,color .3s}
     <!-- STEP 2: OUTPUT FORMAT PICKER -->
     <div class="section-label">Step 2 — Choose output format</div>
     <div class="out-grid">
-      <!-- MP3 -->
       <div class="out-card" id="oc-mp3" onclick="selectOut('mp3')">
         <div class="check-icon"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#080808" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="oc-ext" style="color:var(--ac)">.MP3</div>
@@ -552,7 +553,6 @@ body{transition:background .3s,color .3s}
         <div class="oc-tags"><span class="oc-tag tag-s">Lossy</span><span class="oc-tag tag-q">Small</span></div>
         <div class="oc-compat"><span class="compat-dot cd-ok"></span>All browsers</div>
       </div>
-      <!-- WAV -->
       <div class="out-card" id="oc-wav" onclick="selectOut('wav')">
         <div class="check-icon"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#080808" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="oc-ext" style="color:var(--bl)">.WAV</div>
@@ -560,7 +560,6 @@ body{transition:background .3s,color .3s}
         <div class="oc-tags"><span class="oc-tag tag-q">Lossless</span><span class="oc-tag tag-info">Large</span></div>
         <div class="oc-compat"><span class="compat-dot cd-ok"></span>All browsers</div>
       </div>
-      <!-- OGG -->
       <div class="out-card" id="oc-ogg" onclick="selectOut('ogg')">
         <div class="check-icon"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#080808" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="oc-ext" style="color:var(--gr)">.OGG</div>
@@ -568,7 +567,6 @@ body{transition:background .3s,color .3s}
         <div class="oc-tags"><span class="oc-tag tag-s">Lossy</span><span class="oc-tag tag-q">Small</span></div>
         <div class="oc-compat"><span class="compat-dot cd-part"></span>Chrome / Firefox</div>
       </div>
-      <!-- WEBM -->
       <div class="out-card" id="oc-webm" onclick="selectOut('webm')">
         <div class="check-icon"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#080808" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="oc-ext" style="color:var(--or)">.WEBM</div>
@@ -576,7 +574,6 @@ body{transition:background .3s,color .3s}
         <div class="oc-tags"><span class="oc-tag tag-s">Lossy</span><span class="oc-tag tag-b">Web</span></div>
         <div class="oc-compat"><span class="compat-dot cd-part"></span>Chrome / Firefox</div>
       </div>
-      <!-- FLAC -->
       <div class="out-card" id="oc-flac" onclick="selectOut('flac')">
         <div class="check-icon"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#080808" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="oc-ext" style="color:var(--pu)">.FLAC</div>
@@ -584,7 +581,6 @@ body{transition:background .3s,color .3s}
         <div class="oc-tags"><span class="oc-tag tag-q">Lossless</span><span class="oc-tag tag-info">Medium</span></div>
         <div class="oc-compat"><span class="compat-dot cd-part"></span>Via WAV wrap</div>
       </div>
-      <!-- M4A via ffmpeg.wasm -->
       <div class="out-card" id="oc-m4a" onclick="selectOut('m4a')">
         <div class="check-icon"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5L3.5 6.5L7.5 2.5" stroke="#080808" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="oc-ext" style="color:var(--or)">.M4A</div>
@@ -603,7 +599,7 @@ body{transition:background .3s,color .3s}
       <div class="ffload-bar-wrap"><div class="ffload-bar" id="ffload-bar"></div></div>
     </div>
 
-    <!-- QUALITY SETTINGS (dynamic per format) -->
+    <!-- QUALITY SETTINGS -->
     <div class="qbox" id="qbox">
       <div class="qbox-title" id="qtitle">Output Settings</div>
       <div id="qinner"></div>
@@ -693,7 +689,7 @@ body{transition:background .3s,color .3s}
   <div class="foot-inner">
     <div class="flogo">FLIP<em>//</em>WAV</div>
     <div class="fnote">Files never leave your device · No server · No signup</div>
-    <div class="flinks"><a href="/privacy.html">Privacy</a><a href="/about.html">About</a><a href="/cdn-cgi/l/email-protection#85ede0e9e9eac5e3e9ecf5f2e4f3abe6eae8">Contact</a></div>
+    <div class="flinks"><a href="/privacy.html">Privacy</a><a href="/about.html">About</a><a href="/blog/">Blog</a></div>
   </div>
 </footer>
 
@@ -701,16 +697,13 @@ body{transition:background .3s,color .3s}
 <div class="overlay" id="overlay">
   <div class="ov-top">Your download is being prepared</div>
   <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;justify-content:center">
-    <!-- Big ad -->
     <div style="display:flex;flex-direction:column;align-items:center;gap:5px">
       <span class="ov-ad-lbl">ADVERTISEMENT</span>
       <div class="ov-ad-big">
-        <!-- Replace with AdSense 300×250 -->
         <div class="adt">ADVERTISEMENT</div>
         <div class="adsz">300 × 250 — Medium Rectangle</div>
       </div>
     </div>
-    <!-- Countdown -->
     <div class="ov-mid">
       <div class="ov-count" id="ov-count">10</div>
       <div class="ov-count-lbl">DOWNLOAD STARTS IN <span id="ov-sec">10</span> SECONDS</div>
@@ -718,11 +711,9 @@ body{transition:background .3s,color .3s}
       <button class="ov-skip" id="ov-skip" onclick="skipCountdown()">Skip ▶</button>
     </div>
   </div>
-  <!-- Leaderboard ad -->
   <div class="ov-ad-wrap">
     <span class="ov-ad-lbl">ADVERTISEMENT</span>
     <div class="ov-ad-slot">
-      <!-- Replace with AdSense 728×90 -->
       <div class="adt">ADVERTISEMENT</div>
       <div class="adsz">728 × 90 — Leaderboard</div>
     </div>
@@ -731,11 +722,11 @@ body{transition:background .3s,color .3s}
 
 <div class="toast" id="toast"></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // ═══ STATE ═══
 let files=[], blobs=[], busy=false, outFmt='', inFilter='all';
-let fileBitrates=[]; // per-file bitrate
-let qSettings={mp3:{br:92}, wav:{bd:16}, ogg:{q:'medium'}, webm:{q:'medium'}, flac:{bd:16}, m4a:{br:128}};
+let fileBitrates=[];
+let qSettings={mp3:{br:128}, wav:{bd:16}, ogg:{q:'medium'}, webm:{q:'medium'}, flac:{bd:16}, m4a:{br:128}};
 
 // ═══ FORMAT CONFIGS ═══
 const FMT={
@@ -752,7 +743,7 @@ const INPUT_EXTS=['wav','mp3','ogg','flac','m4a','aac','webm','aiff','opus','mp4
 // ═══ QUALITY UI ═══
 const Q_HTML={
   mp3:`<div class="qrow"><span class="ql">Bitrate</span><div class="qbtns" id="qmp3br">
-    ${[92,128,192,256,320].map(b=>`<button class="qbtn${b===92?' on-ac':''}" onclick="setQ('mp3','br',${b},this,'on-ac')">${b} kbps</button>`).join('')}
+    ${[92,128,192,256,320].map(b=>`<button class="qbtn${b===128?' on-ac':''}" onclick="setQ('mp3','br',${b},this,'on-ac')">${b} kbps</button>`).join('')}
   </div></div>`,
   wav:`<div class="qrow"><span class="ql">Bit Depth</span><div class="qbtns">
     <button class="qbtn on-bl" onclick="setQ('wav','bd',16,this,'on-bl')">16-bit PCM</button>
@@ -792,8 +783,8 @@ function setQ(fmt,key,val,btn,cls){
 function selectOut(fmt){
   if(fmt===outFmt) return;
   outFmt=fmt;
-  document.querySelectorAll('.out-card:not(.disabled)').forEach(c=>{
-    c.className=c.className.replace(/sel(-\w+)?/g,'').trim();
+  document.querySelectorAll('.out-card').forEach(c=>{
+    c.className=c.className.replace(/\bsel(-\w+)?\b/g,'').trim().replace(/\s+/g,' ');
   });
   const card=document.getElementById('oc-'+fmt);
   if(card){card.classList.add('sel','sel-'+fmt)}
@@ -804,25 +795,11 @@ function selectOut(fmt){
   g('sv-fmt').style.color=FMT[fmt].color;
   g('cbtxt').textContent='Convert to '+fmt.toUpperCase();
   updateDropZone();
-  if(files.length>0) render(); // refresh bitrate selects visibility
+  if(files.length>0) render();
 }
 
 function updateDropZone(){
   const f=FMT[outFmt];if(!f)return;
-  const badge=g('dz-fmt-badge'),sub=g('dz-fmt-sub');
-  if(badge){badge.textContent='.'+outFmt.toUpperCase();badge.style.color=f.color}
-  if(sub){
-    const subMap={
-      mp3:'MPEG LAYER 3 · '+qSettings.mp3.br+' KBPS',
-      wav:'PCM UNCOMPRESSED · '+qSettings.wav.bd+'-BIT',
-      ogg:'VORBIS / OPUS · OPEN SOURCE',
-      webm:'OPUS CONTAINER · WEB NATIVE',
-      flac:'FREE LOSSLESS · ARCHIVAL',
-      m4a:'AAC / MPEG-4 · '+qSettings.m4a.br+' KBPS',
-    };
-    sub.textContent=subMap[outFmt]||outFmt.toUpperCase();
-    sub.style.color=f.color;sub.style.opacity='.55';
-  }
   g('mf').style.background=f.color;
 }
 
@@ -866,7 +843,7 @@ function addFiles(nf){
   add.forEach(f=>{
     if(!files.find(x=>x.name===f.name&&x.size===f.size)){
       files.push(f);
-      fileBitrates.push(92); // default 92kbps per file
+      fileBitrates.push(128);
     }
   });
   render();
@@ -879,7 +856,7 @@ function render(){
   const showBr=(outFmt==='mp3'||outFmt==='m4a');
   files.forEach((f,i)=>{
     const ext=f.name.split('.').pop().toUpperCase();
-    const br=fileBitrates[i]||92;
+    const br=fileBitrates[i]||128;
     const brOpts=[92,128,192,256,320].map(b=>`<option value="${b}"${b===br?' selected':''}>${b}k</option>`).join('');
     const c=document.createElement('div');
     c.className='fc';c.id=`c-${i}`;
@@ -889,7 +866,7 @@ function render(){
         <div class="fb">${ext}</div>
         <div class="fm">
           <div class="fn">${esc(f.name)}</div>
-          <div class="fi">${fmt(f.size)} · ${ext} → ${outFmt.toUpperCase()}</div>
+          <div class="fi">${fmt(f.size)} · ${ext} → ${(outFmt||'?').toUpperCase()}</div>
         </div>
         <div class="fst fsw" id="fs-${i}"><span>WAITING</span></div>
         <div class="fa">
@@ -901,7 +878,7 @@ function render(){
       </div>
       <div class="fc-row2">
         <button class="fplay" id="fplay-${i}" onclick="togglePlay(${i})" title="Preview audio">
-          <svg width="8" height="9" viewBox="0 0 8 9" fill="none" id="fplay-icon-${i}"><path d="M1 1l6 3.5L1 8V1z" fill="currentColor"/></svg>
+          <svg width="8" height="9" viewBox="0 0 8 9" fill="none"><path d="M1 1l6 3.5L1 8V1z" fill="currentColor"/></svg>
         </button>
         <div class="fpr-bar" onclick="seekAudio(event,${i})" id="fpr-${i}">
           <div class="fpr-fill" id="fpr-fill-${i}"></div>
@@ -919,7 +896,7 @@ function render(){
     g('sv-f').textContent=files.length;
     g('sv-s').textContent=fmt(files.reduce((a,f)=>a+f.size,0));
     g('sv-d').textContent='0';g('sv-st').textContent='READY';
-    tick(files.length+' FILE(S) QUEUED — SELECT OUTPUT FORMAT','');
+    tick(files.length+' FILE(S) QUEUED — READY TO CONVERT','');
   } else {
     g('ctrl').classList.remove('on');g('sb').classList.remove('on');tick('','');
   }
@@ -954,7 +931,7 @@ async function startConv(){
       }
       const srcExt=files[i].name.lastIndexOf('.');
       const baseName=srcExt>0?files[i].name.substring(0,srcExt):files[i].name;
-      const usedQual = outFmt==='mp3' ? (fileBitrates[i]||92)+'kbps'
+      const usedQual = outFmt==='mp3' ? (fileBitrates[i]||128)+'kbps'
                      : outFmt==='m4a' ? qSettings.m4a.br+'kbps AAC'
                      : outFmt==='wav' ? qSettings.wav.bd+'-bit PCM'
                      : outFmt==='flac' ? qSettings.flac.bd+'-bit'
@@ -972,7 +949,6 @@ async function startConv(){
   if(blobs.length>0){
     tick(`ALL ${blobs.length} FILE(S) CONVERTED TO ${outFmt.toUpperCase()}`,'s');
     const tot=blobs.reduce((a,b)=>a+b.blob.size,0);
-    const qual=getQualLabel();
     g('dlbts').textContent=`${blobs.length} file(s) · ${outFmt.toUpperCase()} · ${fmt(tot)}`;
     g('dlb').classList.add('on');
     g('bzip').onclick=dlZip;
@@ -990,7 +966,7 @@ async function loadFfmpeg(){
   g('ffload').classList.add('on');
   g('ffload-txt').textContent='LOADING FFMPEG.WASM — PLEASE WAIT';
   animFFLoad();
-  const {createFFmpeg,fetchFile}=FFmpeg;
+  const {createFFmpeg}=FFmpeg;
   const ff=createFFmpeg({log:false,progress:({ratio})=>{
     g('ffload-bar').style.width=Math.round(ratio*100)+'%';
   }});
@@ -1049,7 +1025,7 @@ async function _execDlZip(){
   const zip=new JSZip();
   blobs.forEach(({name,blob})=>zip.file(name,blob));
   const zb=await zip.generateAsync({type:'blob',compression:'DEFLATE'});
-  saveAs(zb,`wavflip-${outFmt}-${new Date().toISOString().slice(0,10)}.zip`);
+  saveAs(zb,`flipwav-${outFmt}-${new Date().toISOString().slice(0,10)}.zip`);
 }
 
 function showCountdown(cb){
@@ -1059,7 +1035,6 @@ function showCountdown(cb){
   bar.style.transition='none';bar.style.width='100%';
   skip.classList.remove('show');
   updateCount(secs);
-  // allow skip after 3s
   setTimeout(()=>skip.classList.add('show'),3000);
   _pendingDl=cb;
   setTimeout(()=>{bar.style.transition='width '+secs+'s linear';bar.style.width='0%'},50);
@@ -1084,8 +1059,6 @@ function closeOverlay(exec){
 }
 
 // ═══ ENGINES ═══
-
-// WAV → MP3
 function toMp3(file,kbps,onP){
   return new Promise((res,rej)=>{
     const r=new FileReader();
@@ -1109,7 +1082,6 @@ function toMp3(file,kbps,onP){
   });
 }
 
-// Any → WAV PCM
 function toWav(file,bd,onP){
   return new Promise((res,rej)=>{
     const r=new FileReader();
@@ -1138,18 +1110,14 @@ function toWav(file,bd,onP){
   });
 }
 
-// Any → FLAC (WAV PCM renamed — true FLAC not encodable in pure browser)
 async function toFlac(file,bd,onP){
   const wavBlob=await toWav(file,bd,onP);
-  // Return as WAV data but with .flac extension label (audio is identical PCM)
   return new Blob([wavBlob],{type:'audio/flac'});
 }
 
-// Any → OGG / WebM via MediaRecorder (real-time)
 function toMediaRec(file,mimeType,onP){
   return new Promise((res,rej)=>{
     if(!MediaRecorder.isTypeSupported(mimeType)){
-      // Try fallback
       const fallback=mimeType.includes('ogg')?'audio/webm;codecs=opus':'audio/ogg;codecs=opus';
       if(MediaRecorder.isTypeSupported(fallback)) mimeType=fallback;
       else return rej(new Error('MediaRecorder mimeType not supported: '+mimeType));
@@ -1159,7 +1127,6 @@ function toMediaRec(file,mimeType,onP){
       const ctx=new(window.AudioContext||window.webkitAudioContext)();
       onP(10);const buf=await ctx.decodeAudioData(e.target.result);
       const duration=buf.duration;
-      // Create live context for playback → MediaRecorder
       const lCtx=new AudioContext({sampleRate:buf.sampleRate});
       const dest=lCtx.createMediaStreamDestination();
       const src=lCtx.createBufferSource();
@@ -1168,7 +1135,6 @@ function toMediaRec(file,mimeType,onP){
       const chunks=[];
       rec.ondataavailable=ev=>chunks.push(ev.data);
       rec.onstop=()=>{lCtx.close();ctx.close();onP(100);res(new Blob(chunks,{type:mimeType}))};
-      // Simulate progress based on duration
       const startT=Date.now();
       const progInterval=setInterval(()=>{
         const elapsed=(Date.now()-startT)/1000;
@@ -1218,6 +1184,7 @@ function renderHist(){
 // ═══ HELPERS ═══
 function cSt(i,cc,sc,lbl){
   const el=g(`fs-${i}`),card=g(`c-${i}`);
+  if(!el||!card)return;
   el.className=`fst ${sc}`;el.innerHTML=`<span>${lbl}</span>`;
   card.className=`fc ${cc}`;
 }
@@ -1238,7 +1205,6 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'),3000);
 }
 
-
 // ═══ AUDIO PREVIEW ═══
 let curAudio=null, curIdx=-1, progTimer=null, objUrls=[];
 
@@ -1251,13 +1217,11 @@ function stopAudio(){
     const fill=g(`fpr-fill-${curIdx}`);if(fill)fill.style.width='0%';
     curIdx=-1;
   }
-  // revoke old object URLs
   objUrls.forEach(u=>URL.revokeObjectURL(u));
   objUrls=[];
 }
 
 function togglePlay(i){
-  // if same file — toggle pause/resume
   if(curIdx===i&&curAudio){
     if(curAudio.paused){curAudio.play();startProgTimer(i)}
     else{curAudio.pause();if(progTimer){clearInterval(progTimer);progTimer=null}
@@ -1267,9 +1231,7 @@ function togglePlay(i){
     }
     return;
   }
-  // stop current
   stopAudio();
-  // play new
   const url=URL.createObjectURL(files[i]);
   objUrls.push(url);
   curAudio=new Audio(url);
@@ -1317,19 +1279,33 @@ function toggleTheme(){
   document.body.classList.toggle('dark',isLight);
   document.body.classList.toggle('light',!isLight);
   const svg=g('tt-svg');
-  if(!isLight){
-    svg.innerHTML='<path d="M6.5 2.5A2.5 2.5 0 004 5a4 4 0 004-4 2.5 2.5 0 01-1.5 1.5z" fill="#080808"/>';
-  } else {
-    svg.innerHTML='<path d="M5 1v1M5 8v1M1 5h1M8 5h1M2.1 2.1l.7.7M7.2 7.2l.7.7M7.2 2.8l-.7.7M2.8 7.2l-.7.7" stroke="#080808" stroke-width="1" stroke-linecap="round"/><circle cx="5" cy="5" r="1.5" fill="#080808"/>';
+  if(svg){
+    if(!isLight){
+      svg.innerHTML='<path d="M6.5 2.5A2.5 2.5 0 004 5a4 4 0 004-4 2.5 2.5 0 01-1.5 1.5z" fill="#080808"/>';
+    } else {
+      svg.innerHTML='<path d="M5 1v1M5 8v1M1 5h1M8 5h1M2.1 2.1l.7.7M7.2 7.2l.7.7M7.2 2.8l-.7.7M2.8 7.2l-.7.7" stroke="#080808" stroke-width="1" stroke-linecap="round"/><circle cx="5" cy="5" r="1.5" fill="#080808"/>';
+    }
   }
   try{localStorage.setItem('wf_theme',document.body.classList.contains('light')?'light':'dark')}catch(e){}
 }
 
-// INIT — default select MP3
+// ═══ INIT ═══
 selectOut('mp3');
 renderHist();
-// load saved theme
+
+// Load saved theme
 try{
   const t=localStorage.getItem('wf_theme');
-  if(t==='light'){document.body.classList.replace('dark','light');
-    g('tt
+  if(t==='light'){
+    document.body.classList.remove('dark');
+    document.body.classList.add('light');
+    const svg=g('tt-svg');
+    if(svg){
+      svg.innerHTML='<path d="M6.5 2.5A2.5 2.5 0 004 5a4 4 0 004-4 2.5 2.5 0 01-1.5 1.5z" fill="#080808"/>';
+    }
+  }
+}catch(e){}
+</script>
+
+</body>
+</html>
